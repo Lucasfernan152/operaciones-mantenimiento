@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Storage } from '@ionic/storage';
-import { collection, deleteDoc, doc, getDocs, setDoc } from 'firebase/firestore';
+import { FirestoreDataConverter, QueryDocumentSnapshot, collection, deleteDoc, doc, getDocs, setDoc } from 'firebase/firestore';
 import { db } from './firebase';
 
 //Converter de las entidades
@@ -17,28 +17,15 @@ const tareasConverter = {
             fechaAviso: tarea.fechaAviso,
             fechaProgramacion: tarea.fechaProgramacion,
             observacionPrevia: tarea.observacionPrevia,
-            observacionFinal: tarea.observacionFinal,
-            local: false,
-            deleted: false
+            observacionFinal: tarea.observacionFinal
         };
     },
     fromFirestore: (snapshot: any, options: any) => {
         const tarea = snapshot.data(options);
-        return {
-            id: tarea.id,
-            estado: tarea.estado,
-            creador: tarea.creador,
-            elemento: tarea.elemento,
-            ejecutor: tarea.ejecutor,
-            prioridad: tarea.prioridad,
-            equipo: tarea.equipo,
-            fechaAviso: tarea.fechaAviso,
-            fechaProgramacion: tarea.fechaProgramacion,
-            observacionPrevia: tarea.observacionPrevia,
-            observacionFinal: tarea.observacionFinal,
-            local: tarea.local,
-            deleted: tarea.deleted
-        }
+        return new Tarea(tarea.id, tarea.estado, tarea.creador, tarea.elemento,
+            tarea.ejecutor, tarea.prioridad, tarea.equipo, tarea.fechaAviso,
+            tarea.fechaProgramacion, tarea.observacionPrevia, tarea.observacionFinal,
+            tarea.local, tarea.deleted);
     }
 };
 const usuariosConverter = {
@@ -46,40 +33,24 @@ const usuariosConverter = {
         return {
             id: usuario.id,
             mail: usuario.mail,
-            nombre: usuario.nombre,
-            local: false,
-            deleted: false
+            nombre: usuario.nombre
         };
     },
     fromFirestore: (snapshot: any, options: any) => {
         const usuario = snapshot.data(options);
-        return {
-            id: usuario.id,
-            mail: usuario.mail,
-            nombre: usuario.nombre,
-            rol: usuario.rol,
-            local: usuario.local,
-            deleted: usuario.deleted
-        }
+        return new Usuario(usuario.id, usuario.mail, usuario.nombre, usuario.rol, false, false);
     }
 };
 const elementosConverter = {
     toFirestore: (elemento: Elemento) => {
         return {
             id: elemento.id,
-            nombre: elemento.nombre,
-            local: false,
-            deleted: false
+            nombre: elemento.nombre
         };
     },
     fromFirestore: (snapshot: any, options: any) => {
         const elemento = snapshot.data(options);
-        return {
-            id: elemento.id,
-            nombre: elemento.nombre,
-            local: elemento.local,
-            deleted: elemento.deleted
-        }
+        return new Elemento(elemento.id, elemento.nombre, false, false);
     }
 };
 const reconectadoresConverter = {
@@ -102,48 +73,88 @@ const reconectadoresConverter = {
     }
 };
 
-const ELEMENTOS_KEY = 'elementos';
-const RECONECTADORES_KEY = 'reconectadores';
-const TAREAS_KEY = 'tareas';
-const USUARIOS_KEY = 'usuarios';
-
-export interface Elemento {
-    id: String,
-    nombre: String,
-    local: Boolean,
+const ELEMENTOS_KEY: string = 'elementos';
+const RECONECTADORES_KEY: string = 'reconectadores';
+const TAREAS_KEY: string = 'tareas';
+const USUARIOS_KEY: string = 'usuarios';
+const KEYS: string[] = [ELEMENTOS_KEY, RECONECTADORES_KEY, TAREAS_KEY, USUARIOS_KEY];
+const CONVERTERS = new Map<string, any>([
+    [ELEMENTOS_KEY, elementosConverter],
+    [RECONECTADORES_KEY, reconectadoresConverter],
+    [TAREAS_KEY, tareasConverter],
+    [USUARIOS_KEY, usuariosConverter]
+]);
+export class Item {
+    id: string
+    local: Boolean
     deleted: Boolean
+
+    constructor(id: string, local: Boolean, deleted: Boolean) {
+        this.id = id;
+        this.local = local;
+        this.deleted = deleted;
+    }
 }
 
-export interface Reconectador {
-    id: String,
-    nombre: String,
-    local: Boolean,
-    deleted: Boolean
+export class Elemento extends Item {
+    nombre: String
+
+    constructor(id: string, nombre: String, local: Boolean, deleted: Boolean) {
+        super(id, local, deleted);
+        this.nombre = nombre;
+    }
 }
 
-export interface Tarea {
-    id: String,
-    estado: Estado,
-    creador: Usuario,
-    elemento: Elemento | Reconectador,
-    ejecutor: Usuario,
-    prioridad: Prioridad,
-    equipo: Equipo,
-    fechaAviso: Date,
-    fechaProgramacion: Date | null,
-    observacionPrevia: String,
-    observacionFinal: String,
-    local: Boolean,
-    deleted: Boolean
+export class Reconectador extends Item {
+    nombre: String
+
+    constructor(id: string, nombre: String, local: Boolean, deleted: Boolean) {
+        super(id, local, deleted);
+        this.nombre = nombre;
+    }
 }
 
-export interface Usuario {
-    id: String,
-    mail: String,
-    nombre: String,
-    rol: Rol,
-    local: Boolean,
-    deleted: Boolean
+export class Tarea extends Item {
+    estado: Estado
+    creador: Usuario
+    elemento: Elemento | Reconectador
+    ejecutor: Usuario
+    prioridad: Prioridad
+    equipo: Equipo
+    fechaAviso: Date
+    fechaProgramacion: Date | null
+    observacionPrevia: String
+    observacionFinal: String
+
+    constructor(id: string, estado: Estado, creador: Usuario, elemento: Elemento | Reconectador,
+        ejecutor: Usuario, prioridad: Prioridad, equipo: Equipo, fechaAviso: Date,
+        fechaProgramacion: Date | null, observacionPrevia: String, observacionFinal: String,
+        local: Boolean, deleted: Boolean) {
+        super(id, local, deleted);
+        this.estado = estado;
+        this.creador = creador;
+        this.elemento = elemento;
+        this.ejecutor = ejecutor;
+        this.prioridad = prioridad;
+        this.equipo = equipo;
+        this.fechaAviso = fechaAviso;
+        this.fechaProgramacion = fechaProgramacion;
+        this.observacionPrevia = observacionPrevia;
+        this.observacionFinal = observacionFinal;
+    }
+}
+
+export class Usuario extends Item {
+    mail: String
+    nombre: String
+    rol: Rol
+
+    constructor(id: string, mail: String, nombre: String, rol: Rol, local: Boolean, deleted: Boolean) {
+        super(id, local, deleted);
+        this.mail = mail;
+        this.nombre = nombre;
+        this.rol = rol;
+    }
 }
 
 export enum Equipo {
@@ -198,104 +209,38 @@ export function useStorage() {
     }, []);
 
     const downloadChanges = async () => {
-        const storedUsuarios = await store?.get(USUARIOS_KEY) || [];
-        setElementos(storedUsuarios);
+        let promises: Promise<any>[] = [];
 
-        const usuariosCollectionRef = collection(db, USUARIOS_KEY).withConverter(usuariosConverter);
-        getDocs(usuariosCollectionRef)
-            .then(response => {
-                const usuariosCol: Usuario[] = response.docs.map(doc => doc.data())
-                if (usuariosCol.length !== 0) {
-                    const usersLocal: String[] = usuarios.filter(usuario => usuario.local).map(usuario => usuario.id);
-                    setUsuarios(usuariosCol.filter(usuario => !usersLocal.includes(usuario.id)));
-                    store?.set(USUARIOS_KEY, usuarios);
-                }
-            });
+        KEYS.forEach(key => {
+            const collectionRef = collection(db, key).withConverter(CONVERTERS.get(key));
+            promises.push(getDocs(collectionRef));
+        });
 
-        const storedElementos = await store?.get(ELEMENTOS_KEY) || [];
-        setElementos(storedElementos);
+        const responses = await Promise.all(promises);
+        responses.forEach(async response => {
+            const key: string = response.query._path.segments[0];
+            const docs: QueryDocumentSnapshot[] = response.docs;
+            const data = docs.map(document => document.data());
 
-        const elementosCollectionRef = collection(db, ELEMENTOS_KEY).withConverter(elementosConverter);
-        getDocs(elementosCollectionRef)
-            .then(response => {
-                const elementosCol = response.docs.map(doc => doc.data())
-                if (elementosCol.length !== 0) {
-                    const elementosLocal: String[] = elementos.filter(elemento => elemento.local).map(elemento => elemento.id);
-                    setElementos(elementosCol.filter(elemento => !elementosLocal.includes(elemento.id)));
-                    store?.set(ELEMENTOS_KEY, elementos);
-                }
-            });
-
-        const storedReconectadores = await store?.get(RECONECTADORES_KEY) || [];
-        setReconectadores(storedReconectadores);
-
-        const reconectadoresCollectionRef = collection(db, RECONECTADORES_KEY).withConverter(reconectadoresConverter);
-        getDocs(reconectadoresCollectionRef)
-            .then(response => {
-                const reconectadoresCol = response.docs.map(doc => doc.data())
-                if (reconectadoresCol.length !== 0) {
-                    const reconectadoresLocal: String[] = reconectadores.filter(reconectador => reconectador.local).map(reconectador => reconectador.id);
-                    setElementos(reconectadoresCol.filter(reconectador => !reconectadoresLocal.includes(reconectador.id)));
-                    store?.set(RECONECTADORES_KEY, reconectadores);
-                }
-            });
-
-        const storedTareas = await store?.get(TAREAS_KEY) || [];
-        setTareas(storedTareas);
-
-        const tareasCollectionRef = collection(db, TAREAS_KEY).withConverter(tareasConverter);
-        getDocs(tareasCollectionRef)
-            .then(response => {
-                const tareasCol: Tarea[] = response.docs.map(doc => doc.data())
-                if (tareasCol.length !== 0) {
-                    const tareasLocal: String[] = tareas.filter(tarea => tarea.local).map(tarea => tarea.id);
-                    setTareas(tareasCol.filter(tarea => tareasLocal.includes(tarea.id)));
-                    store?.set(TAREAS_KEY, tareas);
-                }
-            });
+            const stored: Item[] = await store?.get(key) || [];
+            stored.filter(item => item.id)
+            store?.set(key, data);
+        })
     }
 
     const syncChanges = async () => {
         let promises: Promise<void>[] = [];
 
-        tareas.filter(tarea => tarea.local).forEach(tarea => {
-            tarea.local = false;
-            if (tarea.deleted) {
-                promises.push(deleteDoc(doc(db, TAREAS_KEY, tarea.id.toString())));
-            }
-            else {
-                promises.push(setDoc(doc(db, TAREAS_KEY, tarea.id.toString()), tarea));
-            }
-        });
-
-        usuarios.filter(usuario => usuario.local).forEach(usuario => {
-            usuario.local = false;
-            if (usuario.deleted) {
-                promises.push(deleteDoc(doc(db, USUARIOS_KEY, usuario.id.toString())));
-            }
-            else {
-                promises.push(setDoc(doc(db, USUARIOS_KEY, usuario.id.toString()), usuario));
-            }
-        });
-
-        elementos.filter(elemento => elemento.local).forEach(elemento => {
-            elemento.local = false;
-            if (elemento.deleted) {
-                promises.push(deleteDoc(doc(db, ELEMENTOS_KEY, elemento.id.toString())));
-            }
-            else {
-                promises.push(setDoc(doc(db, ELEMENTOS_KEY, elemento.id.toString()), elemento));
-            }
-        });
-
-        reconectadores.filter(reconectador => reconectador.local).forEach(reconectador => {
-            reconectador.local = false;
-            if (reconectador.deleted) {
-                promises.push(deleteDoc(doc(db, RECONECTADORES_KEY, reconectador.id.toString())));
-            }
-            else {
-                promises.push(setDoc(doc(db, RECONECTADORES_KEY, reconectador.id.toString()), reconectador));
-            }
+        KEYS.forEach(async key => {
+            const storedItems: Item[] = await store?.get(key) || [];
+            storedItems.filter(item => item.local).forEach(item => {
+                if (item.deleted) {
+                    promises.push(deleteDoc(doc(db, key, item.id)));
+                }
+                else {
+                    promises.push(setDoc(doc(db, key, item.id), item));
+                }
+            });
         });
 
         Promise.all(promises).then(() => {
