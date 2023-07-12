@@ -1,89 +1,35 @@
 import { useEffect, useState } from "react";
 import { Storage } from '@ionic/storage';
-import { FirestoreDataConverter, QueryDocumentSnapshot, collection, deleteDoc, doc, getDocs, setDoc } from 'firebase/firestore';
+import { FirestoreDataConverter, QueryDocumentSnapshot, collection, deleteDoc, doc, getDocs, setDoc, DocumentData } from 'firebase/firestore';
 import { db } from './firebase';
-
-//Converter de las entidades
-const tareasConverter = {
-    toFirestore: (tarea: Tarea) => {
-        return {
-            id: tarea.id,
-            estado: tarea.estado,
-            creador: tarea.creador,
-            elemento: tarea.elemento,
-            ejecutor: tarea.ejecutor,
-            prioridad: tarea.prioridad,
-            equipo: tarea.equipo,
-            fechaAviso: tarea.fechaAviso,
-            fechaProgramacion: tarea.fechaProgramacion,
-            observacionPrevia: tarea.observacionPrevia,
-            observacionFinal: tarea.observacionFinal
-        };
-    },
-    fromFirestore: (snapshot: any, options: any) => {
-        const tarea = snapshot.data(options);
-        return new Tarea(tarea.id, tarea.estado, tarea.creador, tarea.elemento,
-            tarea.ejecutor, tarea.prioridad, tarea.equipo, tarea.fechaAviso,
-            tarea.fechaProgramacion, tarea.observacionPrevia, tarea.observacionFinal,
-            tarea.local, tarea.deleted);
-    }
-};
-const usuariosConverter = {
-    toFirestore: (usuario: Usuario) => {
-        return {
-            id: usuario.id,
-            mail: usuario.mail,
-            nombre: usuario.nombre
-        };
-    },
-    fromFirestore: (snapshot: any, options: any) => {
-        const usuario = snapshot.data(options);
-        return new Usuario(usuario.id, usuario.mail, usuario.nombre, usuario.rol, false, false);
-    }
-};
-const elementosConverter = {
-    toFirestore: (elemento: Elemento) => {
-        return {
-            id: elemento.id,
-            nombre: elemento.nombre
-        };
-    },
-    fromFirestore: (snapshot: any, options: any) => {
-        const elemento = snapshot.data(options);
-        return new Elemento(elemento.id, elemento.nombre, false, false);
-    }
-};
-const reconectadoresConverter = {
-    toFirestore: (reconectador: Elemento) => {
-        return {
-            id: reconectador.id,
-            nombre: reconectador.nombre,
-            local: false,
-            deleted: false
-        };
-    },
-    fromFirestore: (snapshot: any, options: any) => {
-        const reconectador = snapshot.data(options);
-        return {
-            id: reconectador.id,
-            nombre: reconectador.nombre,
-            local: reconectador.local,
-            deleted: reconectador.deleted
-        }
-    }
-};
 
 const ELEMENTOS_KEY: string = 'elementos';
 const RECONECTADORES_KEY: string = 'reconectadores';
 const TAREAS_KEY: string = 'tareas';
 const USUARIOS_KEY: string = 'usuarios';
 const KEYS: string[] = [ELEMENTOS_KEY, RECONECTADORES_KEY, TAREAS_KEY, USUARIOS_KEY];
+
+const elementoConverter = (elemento: DocumentData): Item => {
+    return new Elemento(elemento.id, elemento.nombre, false, false);
+}
+const reconectadorConverter = (reconectador: DocumentData): Item => {
+    return new Reconectador(reconectador.id, reconectador.nombre, false, false);
+}
+const usuarioConverter = (usuario: DocumentData): Item => {
+    return new Usuario(usuario.id, usuario.mail, usuario.nombre, usuario.rol, false, false);
+}
+const tareaConverter = (tarea: DocumentData): Item => {
+    return new Tarea(tarea.id, tarea.estado, tarea.creador, tarea.elemento, tarea.ejecutor,
+        tarea.prioridad, tarea.equipo, tarea.fechaAviso,tarea.fechaProgramacion,
+        tarea.observacionPrevia, tarea.observacionFinal, false, false);
+}
 const CONVERTERS = new Map<string, any>([
-    [ELEMENTOS_KEY, elementosConverter],
-    [RECONECTADORES_KEY, reconectadoresConverter],
-    [TAREAS_KEY, tareasConverter],
-    [USUARIOS_KEY, usuariosConverter]
+    [ELEMENTOS_KEY, elementoConverter],
+    [RECONECTADORES_KEY, reconectadorConverter],
+    [TAREAS_KEY, tareaConverter],
+    [USUARIOS_KEY, usuarioConverter]
 ]);
+
 export class Item {
     id: string
     local: Boolean
@@ -196,6 +142,13 @@ export function useStorage() {
     const [tareas, setTareas] = useState<Tarea[]>([]);
     const [usuarios, setUsuarios] = useState<Usuario[]>([]);
 
+    const SETTERS = new Map<string, any>([
+        [ELEMENTOS_KEY, setElementos],
+        [RECONECTADORES_KEY, setReconectadores],
+        [TAREAS_KEY, setTareas],
+        [USUARIOS_KEY, setUsuarios]
+    ]);
+
     useEffect(() => {
         const initStorage = async () => {
             const newStore = new Storage({
@@ -207,26 +160,6 @@ export function useStorage() {
         }
         initStorage();
     }, []);
-
-    const downloadChanges = async () => {
-        let promises: Promise<any>[] = [];
-
-        KEYS.forEach(key => {
-            const collectionRef = collection(db, key).withConverter(CONVERTERS.get(key));
-            promises.push(getDocs(collectionRef));
-        });
-
-        const responses = await Promise.all(promises);
-        responses.forEach(async response => {
-            const key: string = response.query._path.segments[0];
-            const docs: QueryDocumentSnapshot[] = response.docs;
-            const data = docs.map(document => document.data());
-
-            const stored: Item[] = await store?.get(key) || [];
-            stored.filter(item => item.id)
-            store?.set(key, data);
-        })
-    }
 
     const syncChanges = async () => {
         let promises: Promise<void>[] = [];
@@ -245,29 +178,106 @@ export function useStorage() {
 
         Promise.all(promises).then(() => {
             downloadChanges();
-        })
+        });
+    }
+    const downloadChanges = async () => {
+        let promises: Promise<any>[] = KEYS.map(key => getDocs(collection(db, key)));
+
+        const responses = await Promise.all(promises);
+        responses.forEach(async response => {
+            const key: string = response.query._path.segments[0];
+            const docs: QueryDocumentSnapshot[] = response.docs;
+
+            const cloudData: Item[] = docs.map(document => CONVERTERS.get(key)(document.data()));
+            const localData: Item[] = await store?.get(key) || [];
+            const mergedData: Item[] = mergeData(cloudData, localData);
+            
+            store?.set(key, mergedData);
+            SETTERS.get(key)(mergedData);
+        });
+    }
+    const mergeData = (cloudData: Item[], localData: Item[]): Item[] => {
+        let mergedData: Item[] = cloudData;
+        
+        localData.forEach(item => {
+            let index = mergedData.findIndex(mergedItem => mergedItem.id === item.id);
+            if(index === -1 && !item.deleted) mergedData.push(item)
+            if(index !== -1 && item.deleted) mergedData[index] = item;
+        });
+
+        return mergedData;
     }
 
-    const saveUsuario = (usuario: Usuario) => {
-        usuario.local = true;
-        const index = usuarios.findIndex(user => usuario.id === user.id);
+    const saveUsuario = (newUser: Usuario) => {
+        newUser.local = true;
+        const index = usuarios.findIndex(user => newUser.id === user.id);
         let newUsuarios = usuarios;
         if (index === -1) {
-            newUsuarios.push(usuario);
+            newUsuarios.push(newUser);
         }
         else {
-            newUsuarios[index] = usuario;
+            newUsuarios[index] = newUser;
         }
-        setUsuarios(newUsuarios);
         store?.set(USUARIOS_KEY, newUsuarios);
         syncChanges();
     }
+    const deleteUsuario = (deletedUser: Usuario) => {
+        deletedUser.deleted = true;
+        if(usuarios.findIndex(usuario => usuario.id === deletedUser.id) !== -1) saveUsuario(deletedUser);
+    }
 
-    const deleteUsuario = (usuario: Usuario) => {
-        debugger
-        if (usuarios.findIndex(user => usuario.id === user.id) === -1) return
-        usuario.deleted = true;
-        saveUsuario(usuario);
+    const saveTarea = (newTarea: Tarea) => {
+        newTarea.local = true;
+        const index = tareas.findIndex(tarea => newTarea.id === tarea.id);
+        let newTareas = tareas;
+        if (index === -1) {
+            newTareas.push(newTarea);
+        }
+        else {
+            newTareas[index] = newTarea;
+        }
+        store?.set(TAREAS_KEY, newTareas);
+        syncChanges();
+    }
+    const deleteTarea = (deletedTarea: Tarea) => {
+        deletedTarea.deleted = true;
+        if(tareas.findIndex(tarea => tarea.id === deletedTarea.id) !== -1) saveTarea(deletedTarea);
+    }
+
+    const saveElemento = (newElemento: Elemento) => {
+        newElemento.local = true;
+        const index = elementos.findIndex(elemento => newElemento.id === elemento.id);
+        let newElementos = elementos;
+        if (index === -1) {
+            newElementos.push(newElemento);
+        }
+        else {
+            newElementos[index] = newElemento;
+        }
+        store?.set(ELEMENTOS_KEY, newElementos);
+        syncChanges();
+    }
+    const deleteElemento = (deletedElemento: Elemento) => {
+        deletedElemento.deleted = true;
+        if(elementos.findIndex(elemento => elemento.id === deletedElemento.id) !== -1) saveElemento(deletedElemento);
+    }
+
+    const saveReconectador = (newReconectador: Reconectador) => {
+        newReconectador.local = true;
+        const index = reconectadores.findIndex(reconectador => newReconectador.id === reconectador.id);
+        let newReconectadores = reconectadores;
+        if (index === -1) {
+            newReconectadores.push(newReconectador);
+        }
+        else {
+            newReconectadores[index] = newReconectador;
+        }
+        store?.set(RECONECTADORES_KEY, newReconectadores);
+        syncChanges();
+    }
+    const deleteReconectador = (deletedReconectador: Reconectador) => {
+        deletedReconectador.deleted = true;
+        if(reconectadores.findIndex(reconectador => reconectador.id === deletedReconectador.id) !== -1) saveReconectador(deletedReconectador);
     }
 
     return {
@@ -275,6 +285,12 @@ export function useStorage() {
         reconectadores,
         tareas,
         saveUsuario,
-        deleteUsuario
+        deleteUsuario,
+        saveTarea,
+        deleteTarea,
+        saveElemento,
+        deleteElemento,
+        saveReconectador,
+        deleteReconectador
     }
 }
