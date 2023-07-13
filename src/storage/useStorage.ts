@@ -212,7 +212,6 @@ export function useStorage() {
         let mergedData: Item[] = cloudData;
         
         localData.forEach(item => {
-            debugger
             let index = mergedData.findIndex(mergedItem => mergedItem.id === item.id);
             if(index === -1 && !item.deleted) mergedData.push(item)
             if(index !== -1 && item.deleted) mergedData[index] = item;
