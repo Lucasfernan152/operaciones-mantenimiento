@@ -142,6 +142,8 @@ export function useStorage() {
     const [tareas, setTareas] = useState<Tarea[]>([]);
     const [usuarios, setUsuarios] = useState<Usuario[]>([]);
 
+    const [isLoading, setIsLoading] = useState<Boolean>(true);
+
     const SETTERS = new Map<string, any>([
         [ELEMENTOS_KEY, setElementos],
         [RECONECTADORES_KEY, setReconectadores],
@@ -162,6 +164,7 @@ export function useStorage() {
     }, []);
 
     const syncChanges = async () => {
+        setIsLoading(true);
         let promises: Promise<void>[] = [];
 
         KEYS.forEach(async key => {
@@ -178,28 +181,38 @@ export function useStorage() {
 
         Promise.all(promises).then(() => {
             downloadChanges();
+        })
+        .catch(() => {
+            setIsLoading(false);
         });
     }
     const downloadChanges = async () => {
         let promises: Promise<any>[] = KEYS.map(key => getDocs(collection(db, key)));
 
-        const responses = await Promise.all(promises);
-        responses.forEach(async response => {
-            const key: string = response.query._path.segments[0];
-            const docs: QueryDocumentSnapshot[] = response.docs;
-
-            const cloudData: Item[] = docs.map(document => CONVERTERS.get(key)(document.data()));
-            const localData: Item[] = await store?.get(key) || [];
-            const mergedData: Item[] = mergeData(cloudData, localData);
-            
-            store?.set(key, mergedData);
-            SETTERS.get(key)(mergedData);
+        Promise.all(promises)
+        .then(responses => {
+            responses.forEach(async response => {
+                const key: string = response.query._path.segments[0];
+                const docs: QueryDocumentSnapshot[] = response.docs;
+    
+                const cloudData: Item[] = docs.map(document => CONVERTERS.get(key)(document.data()));
+                const localData: Item[] = await store?.get(key) || [];
+                const mergedData: Item[] = mergeData(cloudData, localData);
+                
+                store?.set(key, mergedData);
+                SETTERS.get(key)(mergedData);
+            });
+            setIsLoading(false);
+        })
+        .catch(() => {
+            setIsLoading(false);
         });
     }
     const mergeData = (cloudData: Item[], localData: Item[]): Item[] => {
         let mergedData: Item[] = cloudData;
         
         localData.forEach(item => {
+            debugger
             let index = mergedData.findIndex(mergedItem => mergedItem.id === item.id);
             if(index === -1 && !item.deleted) mergedData.push(item)
             if(index !== -1 && item.deleted) mergedData[index] = item;
@@ -218,6 +231,7 @@ export function useStorage() {
         else {
             newUsuarios[index] = newUser;
         }
+        setUsuarios(newUsuarios);
         store?.set(USUARIOS_KEY, newUsuarios);
         syncChanges();
     }
@@ -281,9 +295,11 @@ export function useStorage() {
     }
 
     return {
+        isLoading,
         elementos,
         reconectadores,
         tareas,
+        usuarios,
         saveUsuario,
         deleteUsuario,
         saveTarea,

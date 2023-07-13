@@ -1,24 +1,35 @@
 import './ExploreContainer.css';
-import { Rol, useStorage } from '../storage/useStorage'
+import { Usuario, Rol, useStorage } from '../storage/useStorage'
 
 interface ContainerProps { }
 
 const ExploreContainer: React.FC<ContainerProps> = () => {
-  const { saveUsuario, deleteUsuario } = useStorage();
+  const { isLoading, usuarios, saveUsuario, deleteUsuario } = useStorage();
 
   const createUser = () => {
-    saveUsuario({id: "asdadasdasdasdasdasd", mail: 'example@gmail.com', nombre: 'Example Name', rol: Rol.USUARIO, local: true, deleted: false})
+    saveUsuario({ id: "1", mail: 'example@gmail.com', nombre: 'Example Name', rol: Rol.USUARIO, local: true, deleted: false })
+    saveUsuario({ id: "2", mail: 'example@gmail.com', nombre: 'Example Name', rol: Rol.USUARIO, local: true, deleted: false })
+    saveUsuario({ id: "3", mail: 'example@gmail.com', nombre: 'Example Name', rol: Rol.USUARIO, local: true, deleted: false })
+    saveUsuario({ id: "4", mail: 'example@gmail.com', nombre: 'Example Name', rol: Rol.ADMIN, local: true, deleted: false })
   }
   const deleteUser = () => {
-    deleteUsuario({id: "asdadasdasdasdasdasd", mail: 'example@gmail.com', nombre: 'Example Name', rol: Rol.USUARIO, local: true, deleted: false})
+    deleteUsuario({ id: "1", mail: 'example@gmail.com', nombre: 'Example Name', rol: Rol.USUARIO, local: true, deleted: false })
   }
 
   return (
     <div id="container">
-      <strong>Crear Usuario</strong>
-      <button onClick={createUser}>Crear</button>
-      <strong>Borrar Usuario</strong>
-      <button onClick={deleteUser}>Crear</button>
+      {!isLoading && <>
+        <strong>Crear Usuario</strong>
+        <button onClick={createUser}>Crear</button>
+        <strong>Borrar Usuario</strong>
+        <button onClick={deleteUser}>Eliminar</button>
+        <ul>
+          {
+            usuarios.filter(usuario => !usuario.deleted).map(usuario => '<li>' + usuario.id + '</li>')
+          }
+        </ul>
+      </>
+      }
     </div>
   );
 };
