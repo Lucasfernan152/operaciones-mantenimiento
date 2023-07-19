@@ -5,12 +5,23 @@ import { db } from './firebase';
 
 const ELEMENTOS_KEY = 'elementos';
 
-export interface Elemento {
+export class Usuario {
+    mail: string
+    nombre: string
+    picture: string
+
+    constructor(mail: string, nombre: string, picture: string){
+        this.mail = mail;
+        this.nombre = nombre;
+        this.picture = picture;
+    }
 }
+
+const USUARIO_LOGGED_KEY = 'usuario_logged'
 
 export function useStorage() {
     const [store, setStore] = useState<Storage>();
-    const [elementos, setElementos] = useState<Elemento[]>([]);
+    const [userLogged, setUserLogged] = useState<Usuario | null>(null);
 
     useEffect(() => {
         const initStorage = async () => {
@@ -20,28 +31,24 @@ export function useStorage() {
             const store = await newStore.create();
             setStore(store);
 
-            const storedElementos = await store.get(ELEMENTOS_KEY || []);
-            setElementos(storedElementos);
-
-            const elementosCollectionRef = collection(db, 'elementos');
-            getDocs(elementosCollectionRef)
-                .then(response => {
-                    const elementosCol = response.docs.map(doc => doc.data())
-                    if(elementosCol.length !== 0){
-                        var elementos: Elemento[] = [];
-                        elementosCol.forEach(elemento =>
-                            elementos.push({ 
-                            })
-                        )
-                        setElementos(elementos);
-                        store.set(ELEMENTOS_KEY, elementos);
-                    }
-                });
+            const storedUserLogged: Usuario | null = await store.get(USUARIO_LOGGED_KEY) || null;
+            setUserLogged(storedUserLogged);
         }
         initStorage();
     }, []);
 
+    const login = (usuario: Usuario) => {
+        setUserLogged(usuario);
+        store?.set(USUARIO_LOGGED_KEY, usuario)
+    }
+    const logout = () => {
+        setUserLogged(null);
+        store?.set(USUARIO_LOGGED_KEY, null)
+    }
+
     return {
-        elementos
+        userLogged,
+        login,
+        logout
     }
 }
