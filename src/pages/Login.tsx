@@ -1,17 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import { googleLogout, useGoogleLogin } from '@react-oauth/google';
+import React from 'react';
+import { TokenResponse, googleLogout, useGoogleLogin } from '@react-oauth/google';
 import axios from 'axios';
-import { useStorage, Usuario } from '../useStorage';
+import { useStorage } from '../storage/useStorage';
 
 const Login: React.FC = () => {
-    const { userLogged, login, logout } = useStorage();
+    const { userLogged, login, logout } = useStorage(true);
 
     const handleLogin = useGoogleLogin({
         onSuccess: (codeResponse) => onLogin(codeResponse),
         onError: (error) => console.log('Login Failed:', error)
     });
 
-    const onLogin = (codeResponse: any) => {
+    const onLogin = (codeResponse: Omit<TokenResponse, "error" | "error_description" | "error_uri">) => {
         axios.get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${codeResponse.access_token}`,
             {
                 headers: {
@@ -20,7 +20,11 @@ const Login: React.FC = () => {
                 }
             })
         .then((res) => {
-            login(new Usuario(res.data.email, res.data.name, res.data.picture));
+            if(login(res.data)){
+                console.log("Login Success");
+            } else{
+                console.log("Usuario no registrado en el sistema");
+            }
         })
         .catch((err) => console.log(err));
     };
@@ -45,7 +49,7 @@ const Login: React.FC = () => {
                     <button onClick={onLogout}>Log out</button>
                 </div>
             ) : (
-                <button onClick={() => handleLogin()}>Sign in with Google 🚀 </button>
+                <button onClick={() => handleLogin()}>Sign in with Google 🚀</button>
             )}
         </div>
     )

@@ -1,8 +1,10 @@
+import { Elemento } from '../storage/useStorage';
 import './ExploreContainer.css';
 
 interface ContainerProps { }
 
 const ExploreContainer: React.FC<ContainerProps> = () => {
+  debugger
   return (
     <div id="container">
       <strong>Ready to create an app?</strong>
