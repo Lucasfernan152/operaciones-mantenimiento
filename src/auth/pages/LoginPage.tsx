@@ -84,6 +84,7 @@ export const LoginPage = () => {
                 <Button
                   onClick={ onGoogleSignIn }
                   variant="outlined"
+                  
                   sx={{
                         width: '100%',
                         display: 'flex',

@@ -12,7 +12,7 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({ children, title = '' }) 
       alignItems="center"
       justifyContent="center"
       className="bg-gradient-to-r from-blue-950 from-0% via-blue-800 via-60% to-sky-600 to-90%"
-      sx={{ minHeight: '100vh', padding: 4 }}
+      sx={{ minHeight: '100vh', padding: 4, minWidth:'100vw' , }}
     >
 
       <Grid item
