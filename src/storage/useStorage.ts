@@ -7,6 +7,7 @@ const ELEMENTOS_KEY: string = 'elementos';
 const RECONECTADORES_KEY: string = 'reconectadores';
 const TAREAS_KEY: string = 'tareas';
 const USUARIOS_KEY: string = 'usuarios';
+const USUARIO_LOGGED_KEY: string = 'usuario_logged';
 const KEYS: string[] = [ELEMENTOS_KEY, RECONECTADORES_KEY, TAREAS_KEY, USUARIOS_KEY];
 
 const elementoConverter = (elemento: DocumentData): Item => {
@@ -16,7 +17,7 @@ const reconectadorConverter = (reconectador: DocumentData): Item => {
     return new Reconectador(reconectador.id, reconectador.nombre, false, false);
 }
 const usuarioConverter = (usuario: DocumentData): Item => {
-    return new Usuario(usuario.id, usuario.mail, usuario.nombre, usuario.rol, false, false);
+    return new Usuario(usuario.id, usuario.mail, usuario.nombre, usuario.rol, usuario.picture, false, false);
 }
 const tareaConverter = (tarea: DocumentData): Item => {
     return new Tarea(tarea.id, tarea.estado, tarea.creador, tarea.elemento, tarea.ejecutor,
@@ -94,12 +95,14 @@ export class Usuario extends Item {
     mail: String
     nombre: String
     rol: Rol
+    picture: string
 
-    constructor(id: string, mail: String, nombre: String, rol: Rol, local: Boolean, deleted: Boolean) {
+    constructor(id: string, mail: String, nombre: String, rol: Rol, picture: string, local: Boolean, deleted: Boolean) {
         super(id, local, deleted);
         this.mail = mail;
         this.nombre = nombre;
         this.rol = rol;
+        this.picture = picture;
     }
 }
 
@@ -121,7 +124,8 @@ export enum Prioridad {
 
 export enum Rol {
     USUARIO = 'Usuario',
-    ADMIN = 'Administador'
+    ADMIN = 'Administador',
+    NONE = 'None'
 }
 
 export enum Estado {
@@ -134,13 +138,14 @@ export enum Estado {
     CERRADO = 'Cerrado'
 }
 
-export function useStorage() {
+export function useStorage( sync: boolean ) {
     const [store, setStore] = useState<Storage>();
 
     const [elementos, setElementos] = useState<Elemento[]>([]);
     const [reconectadores, setReconectadores] = useState<Reconectador[]>([]);
     const [tareas, setTareas] = useState<Tarea[]>([]);
     const [usuarios, setUsuarios] = useState<Usuario[]>([]);
+    const [userLogged, setUserLogged] = useState<Usuario | null>(null);
 
     const [isLoading, setIsLoading] = useState<Boolean>(true);
 
@@ -158,7 +163,15 @@ export function useStorage() {
             });
             const store = await newStore.create();
             setStore(store);
-            syncChanges();
+            if(sync){
+                const userLogged = await store?.get(USUARIO_LOGGED_KEY)
+                setUserLogged(userLogged);
+                syncChanges();
+            } else {
+                const userLogged = await store?.get(USUARIO_LOGGED_KEY);
+                setUserLogged(userLogged);
+                setIsLoading(false);
+            }
         }
         initStorage();
     }, []);
@@ -191,6 +204,7 @@ export function useStorage() {
 
         Promise.all(promises)
         .then(responses => {
+            var cantProccesed = 0;
             responses.forEach(async response => {
                 const key: string = response.query._path.segments[0];
                 const docs: QueryDocumentSnapshot[] = response.docs;
@@ -201,8 +215,10 @@ export function useStorage() {
                 
                 store?.set(key, mergedData);
                 SETTERS.get(key)(mergedData);
+
+                cantProccesed = cantProccesed + 1;
+                if(cantProccesed === responses.length) setIsLoading(false);
             });
-            setIsLoading(false);
         })
         .catch(() => {
             setIsLoading(false);
@@ -293,12 +309,27 @@ export function useStorage() {
         if(reconectadores.findIndex(reconectador => reconectador.id === deletedReconectador.id) !== -1) saveReconectador(deletedReconectador);
     }
 
+    const login = (newUser: Usuario): void => {
+        if(usuarios.find(usuario => usuario.mail === newUser.mail)){
+            setUserLogged(newUser);
+            store?.set(USUARIO_LOGGED_KEY, newUser);
+        }
+        else{
+            saveUsuario(newUser);
+        }
+    }
+    const logout = () => {
+        setUserLogged(null);
+        store?.set(USUARIO_LOGGED_KEY, null);
+    }
+
     return {
         isLoading,
         elementos,
         reconectadores,
         tareas,
         usuarios,
+        userLogged,
         saveUsuario,
         deleteUsuario,
         saveTarea,
@@ -306,6 +337,8 @@ export function useStorage() {
         saveElemento,
         deleteElemento,
         saveReconectador,
-        deleteReconectador
+        deleteReconectador,
+        login,
+        logout
     }
 }
