@@ -1,37 +1,46 @@
-import React from 'react';
-import { TokenResponse, googleLogout, useGoogleLogin } from '@react-oauth/google';
-import axios from 'axios';
-import { useStorage } from '../storage/useStorage';
+import React, { useRef } from 'react';
+import { Rol, Usuario, useStorage } from '../storage/useStorage';
+import { GoogleAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, signOut } from 'firebase/auth';
+import { auth } from '../storage/firebase';
 
 const Login: React.FC = () => {
+    const userEmailRef = useRef<HTMLInputElement>(null);
+    const userPasswordRef = useRef<HTMLInputElement>(null);
     const { userLogged, login, logout } = useStorage(true);
 
-    const handleLogin = useGoogleLogin({
-        onSuccess: (codeResponse) => onLogin(codeResponse),
-        onError: (error) => console.log('Login Failed:', error)
-    });
-
-    const onLogin = (codeResponse: Omit<TokenResponse, "error" | "error_description" | "error_uri">) => {
-        axios.get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${codeResponse.access_token}`,
-            {
-                headers: {
-                    Authorization: `Bearer ${codeResponse.access_token}`,
-                    Accept: 'application/json'
-                }
-            })
-        .then((res) => {
-            if(login(res.data)){
-                console.log("Login Success");
-            } else{
-                console.log("Usuario no registrado en el sistema");
-            }
-        })
-        .catch((err) => console.log(err));
-    };
-    const onLogout = () => {
-        googleLogout();
+    const handleLogout = async () => {
         logout();
-    };
+        await signOut(auth);
+    }
+
+    const handleLogin = async () => {
+        const userCredential = await signInWithEmailAndPassword(auth, userEmailRef.current?.value || '', userPasswordRef.current?.value || '');
+        login(new Usuario(userCredential.user.uid, userCredential.user.email || '',
+                        userCredential.user.displayName || '', 
+                        Rol.USUARIO, 
+                        userCredential.user.photoURL || '', 
+                        true, false));
+    }
+
+    const handleGoogleLogin = async () => {
+        const provider = new GoogleAuthProvider();
+
+        const userCredential = await signInWithPopup(auth, provider);
+        login(new Usuario(userCredential.user.uid, userCredential.user.email || '',
+                        userCredential.user.displayName || '', 
+                        Rol.USUARIO, 
+                        userCredential.user.photoURL || '', 
+                        true, false));
+    }
+
+    const handleRegister = async () => {
+        const userCredential = await createUserWithEmailAndPassword(auth, userEmailRef.current?.value || '', userPasswordRef.current?.value || '');
+        login(new Usuario(userCredential.user.uid, userCredential.user.email || '',
+                        userCredential.user.displayName || '', 
+                        Rol.USUARIO, 
+                        userCredential.user.photoURL || '', 
+                        true, false));
+    }
 
     return (
         <div>
@@ -46,10 +55,17 @@ const Login: React.FC = () => {
                     <p>Email Address: {userLogged.mail}</p>
                     <br />
                     <br />
-                    <button onClick={onLogout}>Log out</button>
+                    <button onClick={handleLogout}>Log out</button>
                 </div>
             ) : (
-                <button onClick={() => handleLogin()}>Sign in with Google 🚀</button>
+                <>
+                    <input ref={userEmailRef} type='email' placeholder='Ingrese email'></input>
+                    <input ref={userPasswordRef} type='password' placeholder='Ingrese contraseña'></input>
+                    <button onClick={() => handleLogin()}>Iniciar Sesion</button>
+                    <button onClick={() => handleGoogleLogin()}>Iniciar Sesion con google</button>
+                    <br/>
+                    <button onClick={() => handleRegister()}>Registrarse</button>
+                </>
             )}
         </div>
     )

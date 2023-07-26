@@ -309,14 +309,14 @@ export function useStorage( sync: boolean ) {
         if(reconectadores.findIndex(reconectador => reconectador.id === deletedReconectador.id) !== -1) saveReconectador(deletedReconectador);
     }
 
-    const login = (newUser: any): Boolean => {
-        const newUserLogged = new Usuario(newUser.id, newUser.email ,newUser.name, Rol.NONE, newUser.picture, true, false);
-        if(usuarios.find(usuario => usuario.mail === newUserLogged.mail)){
-            setUserLogged(newUserLogged);
-            store?.set(USUARIO_LOGGED_KEY, newUserLogged);
-            return true;
+    const login = (newUser: Usuario): void => {
+        if(usuarios.find(usuario => usuario.mail === newUser.mail)){
+            setUserLogged(newUser);
+            store?.set(USUARIO_LOGGED_KEY, newUser);
         }
-        return false;
+        else{
+            saveUsuario(newUser);
+        }
     }
     const logout = () => {
         setUserLogged(null);
