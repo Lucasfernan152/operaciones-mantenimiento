@@ -21,15 +21,16 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({ children, title = '' }) 
        justifyContent="center"
        xs={ 3 }
        sx={{ 
-            width: { sm: 450 },
-            backgroundColor: 'white', 
-            padding: 3, 
+            width: { sm: 450, xs: '300' },
+            height: {xs: 500},
+            backgroundColor: '#f1f1f1', 
+            padding: {sm: 3, xs: 2}, 
             borderRadius: 2 
         }}>
 
-                <img src="../../../public/logo.png" width={100} className="mx-auto" /> 
-                <h3 className="text-gray-800 text-center mt-8 text-2xl font-semibold sm:text-3xl">{title}</h3>
-                <hr className="mt-4 mb-16 w-72 text-center mx-auto"/>
+                <img src="../../../public/logo.png" className="mx-auto w-20 md:w-32" /> 
+                <h3 className="text-gray-800 text-center mt-4 md:mt-8 text-base font-semibold md:text-3xl  ">{title}</h3>
+                <hr className="mt-1 md:mt-4 w-40 md:w-72 h-0.5 bg-neutral-300 text-center mx-auto"/>
             { children }
         </Grid>
 

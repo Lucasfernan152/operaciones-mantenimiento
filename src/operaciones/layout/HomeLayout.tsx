@@ -1,4 +1,4 @@
-import { Box, Drawer, Toolbar, IconButton } from '@mui/material';
+import { Box, Drawer, Toolbar, IconButton, Divider } from '@mui/material';
 import {MenuOutlined} from '@mui/icons-material';
 import { HomeLayoutProps } from "../interfaces";
 import { NavBar } from '../components/NavBar';
@@ -30,6 +30,7 @@ export const HomeLayout = ({children, drawerWidth }: HomeLayoutProps) => {
                 <IconButton onClick={handleMenu}>
                     <MenuOutlined/>
                 </IconButton>
+                <Divider/>
             </Toolbar>
         </Drawer>
     </Box>
