@@ -1,4 +1,4 @@
-import { IonRouterOutlet } from '@ionic/react';
+
 import { Route, Redirect } from 'react-router';
 import { OperacionesPage } from '../pages/OperacionesPage';
 

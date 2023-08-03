@@ -1,8 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { User } from './interfaces/User.interface';
 
-const initialState:User ={
-    status: 'not-authenticated',
+const initialState:User = {
+    status: 'checking',
     uid: null,
     email: null,
     displayName: null,

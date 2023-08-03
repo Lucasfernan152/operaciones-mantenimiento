@@ -1,4 +1,4 @@
-import { signWithGoogle } from '../../storage/auth'
+import {  signWithGoogle } from '../../storage/auth'
 
 
 import { useAppDispatch, useAppSelector, useForm } from '../../hooks'
@@ -8,12 +8,12 @@ import { AuthLayout } from '../layout/AuthLayout'
 import { Grid, Button, Alert } from '@mui/material'
 import { useMemo } from 'react'
 
+
+
 export const LoginPage = () => {
 
   const {errorMessage} = useAppSelector( state => state.auth)
   const dispatch = useAppDispatch()
-
-
 
   const onGoogleSignIn = () => {
       dispatch(signWithGoogle())
@@ -75,7 +75,7 @@ export const LoginPage = () => {
                     className="w-full flex items-center justify-center gap-x-3 py-2.5 border rounded-lg shadow-lg text-sm font-medium">
                     <img src="../../../public/google.svg" width={18} />
                     Continuar con Google
-                </Button>    
+                </Button>
         </Grid>
     </AuthLayout>
   )

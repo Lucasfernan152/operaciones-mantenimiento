@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Storage } from '@ionic/storage';
 import { FirestoreDataConverter, QueryDocumentSnapshot, collection, deleteDoc, doc, getDocs, setDoc, DocumentData } from 'firebase/firestore';
-import { db } from './firebase';
+import { FirebaseDB } from '../firebase/config';
 
 const ELEMENTOS_KEY: string = 'elementos';
 const RECONECTADORES_KEY: string = 'reconectadores';
@@ -151,6 +151,8 @@ export function useStorage() {
         [USUARIOS_KEY, setUsuarios]
     ]);
 
+  
+
     useEffect(() => {
         const initStorage = async () => {
             const newStore = new Storage({
@@ -171,10 +173,10 @@ export function useStorage() {
             const storedItems: Item[] = await store?.get(key) || [];
             storedItems.filter(item => item.local).forEach(item => {
                 if (item.deleted) {
-                    promises.push(deleteDoc(doc(db, key, item.id)));
+                    promises.push(deleteDoc(doc(FirebaseDB, key, item.id)));
                 }
                 else {
-                    promises.push(setDoc(doc(db, key, item.id), item));
+                    promises.push(setDoc(doc(FirebaseDB, key, item.id), item));
                 }
             });
         });
@@ -187,7 +189,7 @@ export function useStorage() {
         });
     }
     const downloadChanges = async () => {
-        let promises: Promise<any>[] = KEYS.map(key => getDocs(collection(db, key)));
+        let promises: Promise<any>[] = KEYS.map(key => getDocs(collection(FirebaseDB, key)));
 
         Promise.all(promises)
         .then(responses => {

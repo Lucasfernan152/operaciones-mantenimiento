@@ -4,13 +4,14 @@ import { getAuth } from 'firebase/auth'
 import { getFirestore } from "firebase/firestore";
 
 
+
 const firebaseConfig = {
-  apiKey: "AIzaSyDFamZwuYurg0OiJqnQejfHj01R8YSocA8",
-  authDomain: "pruebas-firebase-28cfc.firebaseapp.com",
-  projectId: "pruebas-firebase-28cfc",
-  storageBucket: "pruebas-firebase-28cfc.appspot.com",
-  messagingSenderId: "461492718345",
-  appId: "1:461492718345:web:f2d695c1ee32adee0761d8"
+  apiKey: "AIzaSyDIcNxaDTcLyg1pyPqRu1xAxtDnkI6vYnE",
+  authDomain: "operaciones-y-mantenimie-71ced.firebaseapp.com",
+  projectId: "operaciones-y-mantenimie-71ced",
+  storageBucket: "operaciones-y-mantenimie-71ced.appspot.com",
+  messagingSenderId: "1093766863963",
+  appId: "1:1093766863963:web:14bafc3dbe761cef64f37e"
 };
 
 
