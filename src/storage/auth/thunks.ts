@@ -1,4 +1,4 @@
-import { logoutFirebase, signInWithGoogle } from "../../firebase/providers"
+import { loginWithEmailPassword, logoutFirebase, signInWithGoogle } from "../../firebase/providers"
 import { checkingCredentials, login, logout } from "./authSlice"
 
 import { Storage } from '@ionic/storage'
@@ -40,13 +40,13 @@ export const signWithGoogle = () => {
 
         
         
-        if(!results.ok) return dispatch(logout(results.errorMessage))
+        if(!results.ok) return dispatch(logout(results.errorMessage));
 
         
 
-        dispatch(login(results))
+        dispatch(login(results));
 
-        saveUserInLocalStorage('auth', results)
+        saveUserInLocalStorage('auth', results);
     }
 }
 
@@ -60,3 +60,15 @@ export const startLogout = () => {
         cleanAuthLocalStorage("auth")
     }
 }
+
+export const startLoginWithEmailPassword = ( email:any, password:any ) =>{
+    return async( dispatch: any ) =>{
+
+        dispatch( checkingCredentials() );   
+
+        const resp = await loginWithEmailPassword( email, password);
+
+        if( !resp.ok ) return dispatch(logout( resp.errorMessage));
+        dispatch(login(resp));
+    }
+} 
