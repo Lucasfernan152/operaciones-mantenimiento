@@ -2,6 +2,7 @@ import { useState, ChangeEvent } from 'react';
 import { FormHook, FormState } from './interfaces';
 
 export const useForm = (initialForm: FormState = {}): FormHook => {
+  
   const [formState, setFormState] = useState<FormState>(initialForm);
 
   const onInputChange = ({ target }: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
