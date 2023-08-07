@@ -1,15 +1,27 @@
-import { Box, Button, TextField } from '@mui/material'
-import React from 'react'
+import  { useState } from "react"; // Importa useState
+import { Box, Button } from "@mui/material";
+import { Redirect } from "react-router";
 
 export const TableHeader = () => {
-  return (
-    <Box display={'flex'} justifyContent={'space-between'}>
-        <input type="text" />
+  const [redirect, setRedirect] = useState(false); // Agrega estado para la redirección
 
-        <section>
-            <Button>Crear nueva tarea</Button>
-            <Button>Buscar Operacion</Button>
-        </section>
+  const redirectToNewTask = () => {
+    setRedirect(true); // Establece el estado para activar la redirección
+  };
+
+  // Si el estado "redirect" es verdadero, realiza la redirección
+  if (redirect) {
+    return <Redirect to="/home/new-task" />;
+  }
+
+  return (
+    <Box display={"flex"} justifyContent={"space-between"}>
+      <input type="text" />
+
+      <section>
+        <Button onClick={redirectToNewTask}>Crear nueva tarea</Button>
+        <Button>Buscar Operacion</Button>
+      </section>
     </Box>
-  )
-}
+  );
+};

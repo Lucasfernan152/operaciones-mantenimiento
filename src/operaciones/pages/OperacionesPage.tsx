@@ -24,8 +24,9 @@ export const OperacionesPage = () => {
                 alignItems="center"
                 justifyContent="center"
                 className="bg-neutral-900 pt-20 pb-6"
-                sx={{ 
-                    height: '100vh',  // Cambiar a 100vh
+                sx={{
+                    minHeight:'100%' ,
+                    height: 'auto',  // Cambiar a 100vh
                     minWidth: '100vw',
                     overflowY: 'auto'  // Cambiar a overflowY para permitir el scroll vertical
                 }}
