@@ -1,99 +1,105 @@
-import { GoogleAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup,  } from 'firebase/auth'
-import { FirebaseAuth, FirebaseDB } from './config';
-import { addDoc, collection, doc, setDoc } from 'firebase/firestore';
-import { Email, Password } from '@mui/icons-material';
-import { Rol, Usuario } from '../storage/useStorage';
-
+import {
+  GoogleAuthProvider,
+  createUserWithEmailAndPassword,
+  getAuth,
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  updateProfile,
+} from "firebase/auth";
+import { FirebaseAuth, FirebaseDB } from "./config";
+import { doc, setDoc } from "firebase/firestore";
 
 const googleProvider = new GoogleAuthProvider();
 
 export const signInWithGoogle = async () => {
+  try {
+    const result = await signInWithPopup(FirebaseAuth, googleProvider);
+    const credentials = GoogleAuthProvider.credentialFromResult(result);
 
-    try {
+    const { email, displayName, uid, photoURL } = result.user;
 
-        const result = await signInWithPopup( FirebaseAuth, googleProvider )
-        const credentials = GoogleAuthProvider.credentialFromResult(result)
-        
-        const { email, displayName, uid, photoURL } = result.user
-        
-        return {
-            ok: true,
-            email, displayName, uid, photoURL,
-        }
+    return {
+      ok: true,
+      email,
+      displayName,
+      uid,
+      photoURL,
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      errorMessage: "Usuario incorrecto",
+    };
+  }
+};
 
-    } catch (error) {
+export const logoutFirebase = async () => await FirebaseAuth.signOut();
 
-        return { 
-            ok: false,
-            errorMessage: 'Usuario incorrecto'
-        }
-    }
-}
+export const loginFirebase = async (email: any, password: any) => {
+  const { user } = await signInWithEmailAndPassword(
+    FirebaseAuth,
+    email,
+    password
+  );
 
-export const logoutFirebase = async() => await FirebaseAuth.signOut();
+  const { uid } = user;
 
-export const loginFirebase = async(email:any , password: any ) => {
-        const { user  } = await signInWithEmailAndPassword(FirebaseAuth, email, password );
-       
-        const { uid, } = user
+  console.log(user);
+};
 
-        console.log(user)
+export const createElement = async () => {
+  const id = new Date().getTime().toString();
+  await setDoc(doc(FirebaseDB, "Reconectadores", id), {
+    id: id,
+    local: true,
+    deleted: false,
+    nombre: "Elemento1",
+  });
+};
 
-    }
-;
+export const loginWithEmailPassword = async (email: any, password: any) => {
+  try {
+    const resp = await signInWithEmailAndPassword(
+      FirebaseAuth,
+      email,
+      password
+    );
+    const { uid, photoURL, displayName } = resp.user;
 
+    return {
+      ok: true,
+      uid,
+      photoURL,
+      displayName,
+      errorMessage: "",
+      email,
+    };
+  } catch (error) {
+    return { ok: false, errorMessage: "Email o contraseña incorrecta" };
+  }
+};
 
+export const registerWhitEmailPassword = async (email: any, password: any) => {
+  const auth = getAuth();
 
+  try {
+    const resp = await createUserWithEmailAndPassword(
+      FirebaseAuth,
+      email,
+      password
+    );
+    console.log(resp)
+    const { uid, photoURL } = resp.user;
 
-export const createElement = async () => { 
-    const id = new Date().getTime().toString();
-    await setDoc(doc(FirebaseDB, "Reconectadores", id), {
-        id: id,
-        local: true,
-        deleted: false,
-        nombre: "Elemento1"
-    })
-}
-
-export const loginWithEmailPassword = async( email: any, password: any ) => {
-
-    try {
-        const resp = await signInWithEmailAndPassword(FirebaseAuth, email, password);
-        const {uid, photoURL, displayName} = resp.user; 
-
-        return{
-            ok: true,
-            uid, photoURL, displayName, errorMessage: '', email
-            
-        }
-        
-    } catch (error) {
-        return {ok:false, errorMessage: 'Email o contraseña incorrecta' }
-        
-    }
-}
-
-export const registerWhitEmailPassword= async(email:any, password:any)=>{
-
-    try {
-        const resp = await createUserWithEmailAndPassword(FirebaseAuth, email, password);
-        const {uid, photoURL} =  resp.user;
-
-        return{
-            ok:true,
-            uid, photoURL
-
-        }
-        
-    } catch (error) {
-        return{
-            ok: false,
-            errorMessage: 'Error' 
-        }
-        
-    }
-
-
-
-
-}
+    return {
+      ok: true,
+      uid,
+      photoURL,
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      errorMessage: "Error",
+    };
+  }
+};

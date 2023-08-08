@@ -2,7 +2,7 @@ import { Grid, Typography } from '@mui/material';
 import { AuthLayoutProps } from '../interfaces/';
 
 
-export const AuthLayout: React.FC<AuthLayoutProps> = ({ children, title = '' }) => {
+export const AuthLayout: React.FC<AuthLayoutProps> = ({ children, title = '', widthContent = 450 }) => {
   return (
     
     <Grid
@@ -21,7 +21,7 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({ children, title = '' }) 
        justifyContent="center"
        xs={ 3 }
        sx={{ 
-            width: { sm: 450, xs: '300' },
+            width: { sm: widthContent, xs: '300' },
             height: {xs: 500},
             backgroundColor: '#f1f1f1', 
             padding: {sm: 3, xs: 2}, 

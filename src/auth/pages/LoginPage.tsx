@@ -18,19 +18,13 @@ export const LoginPage = () => {
 
 
 
-  const onGoogleSignIn = async() => {
-  
-    const results = await signInWithGoogle()
-
-  }
-
   const onLogin = () => dispatch(startLoginWithEmailPassword( email , password ) );
 
   const onRegister = () => registerWhitEmailPassword(email, password); 
   
 
   return (
-    <AuthLayout title="Ingresa con tu cuenta">
+    <AuthLayout title="Ingresa con tu cuenta" widthContent={450} >
         <Grid
         display={"flex"}
         container
@@ -96,35 +90,7 @@ export const LoginPage = () => {
                         >
                           Ingresar
                       </Button>
-                </form>
-                <Button
-                  onClick={ onGoogleSignIn }
-                  variant="outlined"
-                  sx={{
-                        width: '100%',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: '0.75rem', // Ajusta el valor según lo necesites
-                        paddingY: '0.625rem', 
-                        marginY:2,// Ajusta el valor según lo necesites
-                        border: '0.4px solid #16161655', // Puedes agregar el color de borde aquí
-                        borderRadius: '0.375rem', // Ajusta el valor según lo necesites
-                        fontSize: '1rem', // Ajusta el valor según lo necesites
-                        fontWeight: '500',// Puedes ajustar el valor según lo necesites
-                        textTransform:'none',
-                        color: 'black',
-                        '&:hover': {
-                          border: '0.4px solid #16161677',
-                          backgroundColor:'#e6e6e6' // Cambiar el color del texto al hacer hover
-                        } // Cambiar el color del texto a negro
-                         // Cambiar el color del borde a negro
-                      }}
-                    className="w-full flex items-center justify-center gap-x-3 py-2.5 border rounded-lg shadow-lg text-sm font-medium">
-                    <img src="../../../public/google.svg" width={18} />
-                    Continuar con Google
-                </Button>
-                
+                </form>  
         </Grid>
     </AuthLayout>
   )

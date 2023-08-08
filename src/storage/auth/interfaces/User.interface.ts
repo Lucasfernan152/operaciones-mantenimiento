@@ -1,3 +1,6 @@
+export type AuthStatus  = 'checking' | 'authenticated' | 'not-authenticated';
+
+
 export interface User {
     status: AuthStatus,
     uid: string | null,
@@ -5,7 +8,9 @@ export interface User {
     displayName: string | null,
     photoURL: string | null,
     errorMessage: string | null, 
-
 }
 
-export type AuthStatus  = 'checking' | 'authenticated' | 'not-authenticated';
+export interface RegisterUser extends Omit<User, 'uid' | 'photoURL' | 'errorMessage' | 'status' > {
+    password: string,
+
+}
