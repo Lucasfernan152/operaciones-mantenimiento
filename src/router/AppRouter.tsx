@@ -18,7 +18,7 @@ export const AppRouter = () => {
 
 const  {status} = useAppSelector(state => state.auth) 
 
-const {setUserInAuthSlice} = useLocalStorage()
+const { setUserInAuthSlice } = useLocalStorage()
 
 useEffect(() => {
   setUserInAuthSlice()

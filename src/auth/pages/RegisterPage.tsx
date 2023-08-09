@@ -1,20 +1,39 @@
-import React from "react";
+
 import { AuthLayout } from "../layout/AuthLayout";
 import { Alert, Button, Grid, TextField } from "@mui/material";
 import { useAppDispatch, useAppSelector, useForm } from "../../hooks";
 import { registerWhitEmailPassword } from "../../firebase/providers";
+import { RegisterUser } from "../../storage/auth/interfaces/User.interface";
+
+import { startRegisterWithEmailPassword } from "../../storage/auth";
 
 export const RegisterPage = () => {
   const { errorMessage } = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
 
-  const onRegister = () => registerWhitEmailPassword(email, password); 
-
   const { email, password, password2, firstName, lastName, onInputChange } =
     useForm({
       email: "",
       password: "",
+
     });
+
+  const onRegister = () => {
+
+    const displayName = `${firstName} ${lastName}`
+
+    const newUser: RegisterUser = {
+
+      email: email!.toString(),
+      password: password!.toString(),
+      displayName,
+    
+    }
+
+    dispatch( startRegisterWithEmailPassword(newUser) )
+  }; 
+
+  
 
   return (
     <AuthLayout title="Registrar Usuario" widthContent={550}>
@@ -25,11 +44,6 @@ export const RegisterPage = () => {
       >
         <form onSubmit={(e) => e.preventDefault()} className="space-y-5">
           <Grid container spacing={2}>
-          <input
-            accept="image/*"
-            type="file"
-            
-          />
             <Grid item xs={6}>
               <TextField
                 label="Nombre"
@@ -71,12 +85,13 @@ export const RegisterPage = () => {
             value={password}
             onChange={onInputChange}
           />
+
           <TextField
             label="Confirmar Contraseña"
             type="password"
             placeholder=""
             fullWidth
-            name="password"
+            name="password2"
             value={password2}
             onChange={onInputChange}
           />

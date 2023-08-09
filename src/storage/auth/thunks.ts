@@ -1,7 +1,8 @@
-import { loginWithEmailPassword, logoutFirebase, signInWithGoogle } from "../../firebase/providers"
+import { loginWithEmailPassword, logoutFirebase, registerWhitEmailPassword, signInWithGoogle } from "../../firebase/providers"
 import { checkingCredentials, login, logout } from "./authSlice"
 
 import { Storage } from '@ionic/storage'
+import { RegisterUser } from "./interfaces/User.interface";
 
 // funciones para interactuar con el localStorage
 const storage = new Storage();
@@ -18,36 +19,6 @@ async function saveUserInLocalStorage(key: string, value: any) {
 async function cleanAuthLocalStorage(key: string) {
     await initializeStorage();
     await storage.remove(key);
-}
-
-
-
-export const checkingAuthentication = (email:string , password: string ) => {
-    return async (dispatch: any) => {
-
-        dispatch( checkingCredentials() )
-
-    }
-}
-
-
-export const signWithGoogle = () => {
-    return async (dispatch: any) => {
-        
-        dispatch(checkingCredentials())
-
-        const results = await signInWithGoogle()
-
-        
-        
-        if(!results.ok) return dispatch(logout(results.errorMessage));
-
-        
-
-        dispatch(login(results));
-
-        saveUserInLocalStorage('auth', results);
-    }
 }
 
 
@@ -70,5 +41,22 @@ export const startLoginWithEmailPassword = ( email:any, password:any ) =>{
 
         if( !resp.ok ) return dispatch(logout( resp.errorMessage));
         dispatch(login(resp));
+
+        saveUserInLocalStorage('auth', resp);
     }
 } 
+
+
+export const startRegisterWithEmailPassword = (user:RegisterUser)=>{
+    return async( dispatch:any ) => {
+        
+        dispatch(checkingCredentials());
+
+        const resp = await registerWhitEmailPassword(user)
+
+        if( !resp.ok ) return dispatch(logout( resp.errorMessage));
+        dispatch(login(resp));
+
+        saveUserInLocalStorage('auth', resp);
+    }
+}

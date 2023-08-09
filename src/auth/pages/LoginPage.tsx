@@ -1,26 +1,26 @@
 
 import { Grid, TextField, Button, Alert } from '@mui/material'
 import { AuthLayout } from "../layout/AuthLayout"
-import { registerWhitEmailPassword, signInWithGoogle } from '../../firebase/providers';
+
 import { useAppDispatch, useAppSelector, useForm } from "../../hooks";
 import { startLoginWithEmailPassword } from "../../storage/auth";
 
 
 export const LoginPage = () => {
 
-  const {errorMessage } = useAppSelector(state => state.auth)
-  const dispatch = useAppDispatch()
+  const {errorMessage } = useAppSelector(state => state.auth);
+  const dispatch = useAppDispatch();
 
   const {email, password, onInputChange} = useForm({
     email: '',
     password: '',
-  })
+  });
 
 
 
   const onLogin = () => dispatch(startLoginWithEmailPassword( email , password ) );
 
-  const onRegister = () => registerWhitEmailPassword(email, password); 
+
   
 
   return (
