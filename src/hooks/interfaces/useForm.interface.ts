@@ -5,5 +5,5 @@ export type FormState = {
   };
   
 export type FormHook = {
-    [key: string]: undefined | ((event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void);
+    [key: string]: undefined | ((event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement >) => void);
   };

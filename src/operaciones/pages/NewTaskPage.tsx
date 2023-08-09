@@ -1,26 +1,34 @@
 import { Button, FormControl, Grid, TextField } from "@mui/material";
 import { HomeLayout } from "../layout/HomeLayout";
-import { useForm } from "../../hooks";
+import { useAppSelector, useForm } from "../../hooks";
 
 import { InputSelectComponent } from "../components/InputSelectComponent";
 import { useMappedEnums } from "../hooks/useMappedEnums";
 import { Equipo, Prioridad } from "../../storage/useStorage";
+import { createNewTask } from "../hooks/useNewTask";
 
 export const NewTaskPage = () => {
+  
+  const {displayName, email} = useAppSelector(state => state.auth)
   const priorityArray = useMappedEnums(Prioridad);
   const deviceArray = useMappedEnums(Equipo);
 
-  const { observationsValue, onInputChange } = useForm({});
+  const { userAsignedValue ,observationsValue, onInputChange } = useForm({});
 
-  let elementValue:any
-
-  const onSelectElementValue = (value:any) =>{
-    elementValue = value
-  }
 
   const onSubmit = (event:any) => {
     event.preventDefault()
-    console.log(elementValue)
+    
+    const form = event.target
+
+    const formData = new FormData(form);
+    const priority = formData.get('Prioridad')
+    const device = formData.get('Equipo')
+
+    
+    createNewTask(priority, device, email , observationsValue, userAsignedValue, displayName)
+
+    
   }
 
 
@@ -65,19 +73,26 @@ export const NewTaskPage = () => {
                   value={observationsValue}
                   onChange={onInputChange}
                 />
+                <TextField
+                  label="Observaciones"
+                  type="text"
+                  placeholder="Observaciones..."
+                  fullWidth
+                  name="userAsignedValue"
+                  value={userAsignedValue}
+                  onChange={onInputChange}
+                />
 
                 <InputSelectComponent
                   title={"Prioridad"}
                   id={"id-priority"}
                   selectInput={priorityArray}
-                  onSelectChange={observationsValue}
                 />
 
                 <InputSelectComponent
                   title={"Equipo"}
                   id={"id-device"}
                   selectInput={deviceArray}
-                  onSelectChange={onSelectElementValue}
                 />
               </FormControl>
 

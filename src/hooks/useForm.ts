@@ -5,7 +5,7 @@ export const useForm = (initialForm: FormState = {}): FormHook => {
   
   const [formState, setFormState] = useState<FormState>(initialForm);
 
-  const onInputChange = ({ target }: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
+  const onInputChange = ({ target }: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) : void => {
     const { name, value } = target;
     setFormState({
       ...formState,
@@ -17,9 +17,14 @@ export const useForm = (initialForm: FormState = {}): FormHook => {
     setFormState(initialForm);
   };
 
+  
+
+
+
   return {
     ...formState,
     onInputChange,
     onResetForm,
+
   };
 };
