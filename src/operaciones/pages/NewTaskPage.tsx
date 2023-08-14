@@ -1,47 +1,74 @@
-import { Button, FormControl, Grid, TextField } from "@mui/material";
-import { HomeLayout } from "../layout/HomeLayout";
-import { useAppSelector, useForm } from "../../hooks";
+import { FormEventHandler, useState } from "react";
 
-import { InputSelectComponent } from "../components/InputSelectComponent";
-import { useMappedEnums } from "../hooks/useMappedEnums";
+import { useAppSelector, useForm } from "../../hooks";
+import { createNewTask, useMappedEnums } from "../hooks"
+
 import { Equipo, Prioridad } from "../../storage/useStorage";
-import { createNewTask } from "../hooks/useNewTask";
+
+import { HomeLayout } from "../layout/HomeLayout";
+import { Button, FormControl, Grid, TextField } from "@mui/material";
+import { InputSelectComponent } from "../components/InputSelectComponent";
+import { DropDownAsyncTask } from "../components/DropDownAsyncTask";
+
 
 export const NewTaskPage = () => {
-  
-  const {displayName, email} = useAppSelector(state => state.auth)
+
+  const [taskDataID, setTaskDataID] = useState({
+    elemento: '',
+    usuario: '',
+  })
+
+  const { id } = useAppSelector((state) => state.auth);
   const priorityArray = useMappedEnums(Prioridad);
   const deviceArray = useMappedEnums(Equipo);
 
-  const { userAsignedValue ,observationsValue, onInputChange } = useForm({});
 
+  const { observationsValue, onInputChange } = useForm({});
 
-  const onSubmit = (event:any) => {
-    event.preventDefault()
-    
-    const form = event.target
+  const handleSelected = (selectedItem: any, collection:string ) => {
+    switch(collection){
+      case 'Usuarios': {
+
+        setTaskDataID({...taskDataID, usuario: selectedItem.id})
+        console.log(taskDataID)
+        return
+      }
+      case 'Elementos': {
+        setTaskDataID({...taskDataID, elemento: selectedItem.id})
+        console.log(taskDataID)
+      }
+
+      default: return
+    }
+
+  };
+
+  const onSubmit = (event: any) => {
+    event?.preventDefault();
+
+    const form = event.target;
 
     const formData = new FormData(form);
-    const priority = formData.get('Prioridad')
-    const device = formData.get('Equipo')
+    const priority = formData.get("Prioridad") as Prioridad;
+    const device = formData.get("Equipo") as Equipo;
+    
+    const { usuario, elemento} = {...taskDataID}
+
+
+    createNewTask(id!, usuario, elemento, priority, device,  observationsValue!.toString())
 
     
-    createNewTask(priority, device, email , observationsValue, userAsignedValue, displayName)
-
-    
-  }
-
+  };
 
   return (
-    <>
-      <HomeLayout drawerWidth={250}>
+    
         <Grid
           container
           spacing={0}
           direction="column"
           alignItems="center"
           justifyContent="center"
-          className="bg-neutral-900 pt-20 pb-6"
+          className="bg-gradient-to-tr from-sky-700 to-blue-800 pt-20 pb-6"
           sx={{
             minHeight: "100%",
             height: "auto", // Cambiar a 100vh
@@ -52,37 +79,38 @@ export const NewTaskPage = () => {
           <Grid
             item
             className="shadow-xl"
+            display="flex"
             alignItems="center"
-            justifyContent="center"
+            flexDirection={"column"}
+            justifyContent="space-between"
             xs={3}
             sx={{
-              width: { sm: "80%", xs: "70vw" },
+              minWidth: { sm: '500px', xs: "70vw" },
+              minHeight: {sm:'550px'},
               backgroundColor: "#f1f1f1",
               padding: 3,
               borderRadius: 2,
             }}
           >
-            <form onSubmit={onSubmit}>
+            <h3 className="text-gray-800 text-center mt-4 md:mt-8 text-base font-semibold md:text-4xl  ">Nueva Tarea</h3>
+            <hr className="mt-1 md:mt-4 w-40 md:w-72 h-0.5 bg-neutral-300 text-center "/>
+            <form className=" w-full mx-4" onSubmit={onSubmit}>
               <FormControl fullWidth>
-                <TextField
-                  label="Observaciones"
-                  type="text"
-                  placeholder="Observaciones..."
-                  fullWidth
-                  name="observationsValue"
-                  value={observationsValue}
-                  onChange={onInputChange}
-                />
-                <TextField
-                  label="Observaciones"
-                  type="text"
-                  placeholder="Observaciones..."
-                  fullWidth
-                  name="userAsignedValue"
-                  value={userAsignedValue}
-                  onChange={onInputChange}
-                />
-
+                <Grid xs={12} display={'flex'} justifyContent={"space-between"} sx={{flexDirection: {xs:"column", md: "row"} ,}}>
+                  <DropDownAsyncTask column={'Usuarios'} onSelect={handleSelected}/>
+                  <DropDownAsyncTask column={'Elementos'} onSelect={handleSelected}/>
+                </Grid>
+                <div className="md:mt-4">
+                  <TextField
+                    label="Observaciones"
+                    type="text"
+                    placeholder="Observaciones..."
+                    fullWidth
+                    name="observationsValue"
+                    value={observationsValue}
+                    onChange={onInputChange}
+                  />
+                </div>
                 <InputSelectComponent
                   title={"Prioridad"}
                   id={"id-priority"}
@@ -121,7 +149,5 @@ export const NewTaskPage = () => {
             </form>
           </Grid>
         </Grid>
-      </HomeLayout>
-    </>
   );
 };

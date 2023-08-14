@@ -40,6 +40,7 @@ export const startLoginWithEmailPassword = ( email:any, password:any ) =>{
         const resp = await loginWithEmailPassword( email, password);
 
         if( !resp.ok ) return dispatch(logout( resp.errorMessage));
+        console.log(resp)
         dispatch(login(resp));
 
         saveUserInLocalStorage('auth', resp);
@@ -53,6 +54,7 @@ export const startRegisterWithEmailPassword = (user:RegisterUser)=>{
         dispatch(checkingCredentials());
 
         const resp = await registerWhitEmailPassword(user)
+        console.log()
 
         if( !resp.ok ) return dispatch(logout( resp.errorMessage));
         dispatch(login(resp));

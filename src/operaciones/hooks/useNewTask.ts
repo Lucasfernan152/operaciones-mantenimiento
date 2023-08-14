@@ -1,28 +1,18 @@
-import { Tarea, Estado } from "../../storage/useStorage"
+
+import { addItemAtColumn } from "../../firebase/providers"
+import { Tarea, Prioridad, Equipo } from "../../storage/useStorage"
+
 
 
 
 //TODO TIPAR LOS DATOS CORRECTAMENTE
 
 
-export const createNewTask = (priority:any, device:any, element:any = "element", observations:any, userAsignee:any, currentUser:any) => {
+export const createNewTask = async (id:string, idAssignedUser: string, idElement:string, priority:Prioridad, device: Equipo, previousDescription: string ) => {
 
-    const tarea1 = new Tarea(
-    new Date().getTime().toString(),
-    Estado.PENDIENTE,
-    currentUser,
-    element,
-    userAsignee,
-    priority,
-    device,
-    new Date(),
-    null,
-    observations,
-    "",
-    true,
-    false
-    )
-
-    console.log(tarea1)
+    const tareaCreada = new Tarea( id, idElement, idAssignedUser, priority, device, previousDescription)
+    
+    await addItemAtColumn({...tareaCreada}, 'Tareas')
+    
 
 }

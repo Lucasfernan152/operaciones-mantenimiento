@@ -2,8 +2,8 @@
 import { AuthLayout } from "../layout/AuthLayout";
 import { Alert, Button, Grid, TextField } from "@mui/material";
 import { useAppDispatch, useAppSelector, useForm } from "../../hooks";
-import { registerWhitEmailPassword } from "../../firebase/providers";
-import { RegisterUser } from "../../storage/auth/interfaces/User.interface";
+import { getUsersWithEmailFilter} from "../../firebase/providers";
+import { RegisterUser, Rol } from "../../storage/auth/interfaces/User.interface";
 
 import { startRegisterWithEmailPassword } from "../../storage/auth";
 
@@ -18,12 +18,20 @@ export const RegisterPage = () => {
 
     });
 
-  const onRegister = () => {
+  const onRegister = async() => {
+    
+    const resultOfCheckWhitelist = await getUsersWithEmailFilter(email!.toString().toLowerCase())
 
+    console.log(resultOfCheckWhitelist)
+
+    if(!resultOfCheckWhitelist) return console.log('Usuario invalido para Registrar')
+    
     const displayName = `${firstName} ${lastName}`
+    console.log(resultOfCheckWhitelist[0].id)
 
-    const newUser: RegisterUser = {
-
+    const newUser: any = {
+      userRol: 'USUARIO',
+      id: resultOfCheckWhitelist[0].id,
       email: email!.toString(),
       password: password!.toString(),
       displayName,
@@ -31,6 +39,10 @@ export const RegisterPage = () => {
     }
 
     dispatch( startRegisterWithEmailPassword(newUser) )
+    
+    
+    
+
   }; 
 
   

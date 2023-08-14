@@ -1,14 +1,28 @@
 import { Box, Drawer, Toolbar, IconButton, Divider, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Grid, Typography } from '@mui/material';
-import {MenuOutlined, TurnedInNot} from '@mui/icons-material';
+import {MenuOutlined, HomeRounded, AddTask, SystemUpdateAlt, Add} from '@mui/icons-material';
 import { HomeLayoutProps } from "../interfaces";
 import { NavBar } from '../components/NavBar';
 import { useState } from 'react';
 import { useAppSelector } from '../../hooks';
+import { getMenuOptions } from '../helpers';
+import { useHistory } from 'react-router-dom';
 
 
 export const HomeLayout = ({children, drawerWidth }: HomeLayoutProps) => {
 
-  const {displayName} = useAppSelector(state => state.auth)
+
+
+    
+        const history = useHistory(); // Obtiene la instancia de history
+      
+        const navigateByMenu = (path:string) => {
+          history.push(path); // Redirige a la ruta deseada
+        };
+
+
+  const {displayName, userRol} = useAppSelector(state => state.auth)
+
+  const menuOptions = getMenuOptions(userRol!)
 
   const [menu, setMenu] = useState(false);
 
@@ -30,7 +44,7 @@ export const HomeLayout = ({children, drawerWidth }: HomeLayoutProps) => {
                 '& .MuiDrawer-paper': {boxSizing: 'border-box', width: drawerWidth }
             }}
         >
-            <Toolbar>
+            <Toolbar className='flex justify-between'>
                 <IconButton onClick={handleMenu}>
                     <MenuOutlined/>
                 </IconButton>
@@ -42,15 +56,14 @@ export const HomeLayout = ({children, drawerWidth }: HomeLayoutProps) => {
                 <Divider/>
                 <List>
                 {
-                    ['Enero','Febrero','Marzo','Abril'].map( text => (
-                        <ListItem key={ text } disablePadding>
+                    menuOptions.map( ({ option, icon, path}) => (
+                        <ListItem key={ option } onClick={() => navigateByMenu(path)} disablePadding>
                             <ListItemButton>
                                 <ListItemIcon>
-                                    <TurnedInNot />
+                                    {icon}
                                 </ListItemIcon>
                                 <Grid container>
-                                    <ListItemText primary={ text } />
-                                    <ListItemText secondary={ 'Exercitation cillum irure elit consectetur.' } />
+                                    <ListItemText primary={ option } />
                                 </Grid>
                             </ListItemButton>
                         </ListItem>

@@ -3,7 +3,9 @@ import { User } from './interfaces/User.interface';
 
 const initialState:User = {
     status: 'checking',
+    userRol: null,
     uid: null,
+    id: null,
     email: null,
     displayName: null,
     photoURL: null,
@@ -18,6 +20,8 @@ export const authSlice = createSlice({
             
             state.status = 'authenticated';
             state.uid = payload.uid;
+            state.userRol = payload.userRol;
+            state.id = payload.id
             state.email = payload.email;
             state.displayName = payload.displayName;
             state.photoURL = payload.photoURL;

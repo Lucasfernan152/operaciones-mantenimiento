@@ -1,26 +1,83 @@
-import  { useState } from "react"; // Importa useState
-import { Box, Button } from "@mui/material";
-import { Redirect } from "react-router";
+import React, { useState } from 'react';
+import { Box, Button, Input, IconButton, useMediaQuery } from '@mui/material';
+import { useHistory } from 'react-router-dom'; // Importa useHistory para manejar la redirección
+import AddIcon from '@mui/icons-material/Add';
+import SearchIcon from '@mui/icons-material/Search';
 
 export const TableHeader = () => {
-  const [redirect, setRedirect] = useState(false); // Agrega estado para la redirección
+  const history = useHistory(); // Obtiene la instancia de history
 
   const redirectToNewTask = () => {
-    setRedirect(true); // Establece el estado para activar la redirección
+    history.push('/home/new-task'); // Redirige a la ruta deseada
   };
-
-  // Si el estado "redirect" es verdadero, realiza la redirección
-  if (redirect) {
-    return <Redirect to="/home/new-task" />;
-  }
+  const isMobile = useMediaQuery('(max-width:768px)');
 
   return (
-    <Box display={"flex"} justifyContent={"space-between"}>
-      <input type="text" />
-
-      <section>
-        <Button onClick={redirectToNewTask}>Crear nueva tarea</Button>
-        <Button>Buscar Operacion</Button>
+    <Box
+      display="flex"
+      justifyContent="space-between"
+      alignItems="center"
+      p={2}
+      bgcolor="background.paper"
+      boxShadow={2}
+      sx={{flexDirection:{xs:"column", sm:"row"},  borderRadius: '16px 16px 0 0', marginX: {xs:0 ,sm:'6px'} ,}}
+      
+    >
+      <div className="textInputWrapper w-full">
+        <Input placeholder="Juan... Id..." type="text" className="textInput w-full" />
+      </div>
+      <section className="flex items-center gap-2">
+        {isMobile ? (
+          <>
+            <IconButton
+              onClick={redirectToNewTask}
+              sx={{
+                backgroundColor: 'primary.main',
+                color: 'white',
+                textTransform: 'none',
+              }}
+            >
+              <AddIcon />
+            </IconButton>
+            <IconButton
+              onClick={() => {}}
+              sx={{
+                backgroundColor: 'primary.main',
+                color: 'white',
+                textTransform: 'none',
+              }}
+            >
+              <SearchIcon />
+            </IconButton>
+          </>
+        ) : (
+          <>
+            <Button
+              onClick={redirectToNewTask}
+              variant="contained"
+              sx={{
+                backgroundColor: 'primary.main',
+                color: 'white',
+                textTransform: 'none',
+              }}
+              startIcon={<AddIcon />}
+            >
+              Crear nueva tarea
+            </Button>
+            <Button
+              variant="contained"
+              sx={{
+                backgroundColor: 'primary.main',
+                color: 'white',
+                textTransform: 'none',
+              }}
+              onClick={() => {}}
+              startIcon={<SearchIcon />}
+            >
+              Buscar Operacion
+            </Button>
+          </>
+        )}
       </section>
     </Box>
   );

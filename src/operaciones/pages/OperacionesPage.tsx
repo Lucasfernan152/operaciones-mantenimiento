@@ -1,20 +1,21 @@
-import { Grid, Divider, Typography } from '@mui/material';
-import { HomeLayout } from "../layout/HomeLayout"
+import { Grid } from '@mui/material';
+
 import { UserTable } from '../components/UserTable';
-import {usuarios} from '../../storage/tareas'
-import { useState } from "react";
+
 import { TableHeader } from '../components/TableHeader';
+import { useAppSelector } from '../../hooks';
+import { ListTasksUser } from '../components/ListTasksUser';
 
 
 
 export const OperacionesPage = () => {
 
+  const {userRol} = useAppSelector(state => state.auth)
 
 
 
   return (
     <>
-        <HomeLayout drawerWidth={250} >
             
             <Grid
                 
@@ -23,7 +24,7 @@ export const OperacionesPage = () => {
                 direction="column"
                 alignItems="center"
                 justifyContent="center"
-                className="bg-neutral-900 pt-20 pb-6"
+                className=" bg-gradient-to-tr from-sky-700 to-blue-800 pt-20 pb-6"
                 sx={{
                     minHeight:'100%' ,
                     height: 'auto',  // Cambiar a 100vh
@@ -31,24 +32,27 @@ export const OperacionesPage = () => {
                     overflowY: 'auto'  // Cambiar a overflowY para permitir el scroll vertical
                 }}
             >
-                <Grid
-                    item
-                    className='shadow-xl'
-                    alignItems="center"
-                    justifyContent="center"
-                    xs={3}
-                    sx={{ 
-                        width: { sm: '80%', xs: '70vw' },
-                        backgroundColor: '#f1f1f1',
-                        padding: 3,
-                        borderRadius: 2
-                    }}
-                >
-                  <TableHeader/>
-                    <UserTable/>
-                </Grid>
+              { (userRol === 'ADMIN') ? (<Grid
+                              item
+                              className='shadow-xl'
+                              alignItems="center"
+                              justifyContent="center"
+                              xs={3}
+                              sx={{ 
+                                  width: { sm: '80%', xs: '100%' },
+                                  backgroundColor: '#f1f1f1',
+                                  paddingY: 3,
+                                  borderRadius: 2
+                              }}
+                          >
+                            
+                            <TableHeader/>
+                              <UserTable/>
+                          </Grid>):(
+                            <ListTasksUser/>
+                          )
+                }
             </Grid>
-        </HomeLayout >
     </>
   )
 }

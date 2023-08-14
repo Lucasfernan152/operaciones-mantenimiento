@@ -1,0 +1,13 @@
+{
+    "id": "1",
+    "estado": "PENDIENTE",
+    "creador":"idUsuarioCreador",
+    "elemento": "idElemento",
+    "ejecutor": "idUsuarioEjecutor",
+    "prioridad": "ALTA",
+    "equipo": "BOOSTER",
+    "fechaAviso": "2023-07-26T00:00:00.000Z",
+    "fechaProgramacion": null,
+    "observacionPrevia": "Esta es una observación previa",
+    "observacionFinal": "Esta es una observación final"
+}
