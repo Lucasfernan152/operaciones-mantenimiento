@@ -85,16 +85,16 @@ export const NewTaskPage = () => {
             justifyContent="space-between"
             xs={3}
             sx={{
-              minWidth: { sm: '500px', xs: "70vw" },
+              minWidth: { sm: '500px', xs: "90vw" },
               minHeight: {sm:'550px'},
               backgroundColor: "#f1f1f1",
               padding: 3,
               borderRadius: 2,
             }}
           >
-            <h3 className="text-gray-800 text-center mt-4 md:mt-8 text-base font-semibold md:text-4xl  ">Nueva Tarea</h3>
-            <hr className="mt-1 md:mt-4 w-40 md:w-72 h-0.5 bg-neutral-300 text-center "/>
-            <form className=" w-full mx-4" onSubmit={onSubmit}>
+            <h3 className="text-gray-800 text-center mt-4 md:mt-8 text-3xl font-sans font-bold md:text-4xl  ">Nueva Tarea</h3>
+            <hr className="mt-4 mb-6  md:my-4 w-[80%] md:w-72 h-0.5 bg-neutral-300 text-center "/>
+            <form className=" w-full  mx-4" onSubmit={onSubmit}>
               <FormControl fullWidth>
                 <Grid xs={12} display={'flex'} justifyContent={"space-between"} sx={{flexDirection: {xs:"column", md: "row"} ,}}>
                   <DropDownAsyncTask column={'Usuarios'} onSelect={handleSelected}/>

@@ -3,6 +3,7 @@ import { Avatar, Paper, Skeleton, Table, TableBody, TableCell, TableContainer, T
 import { TaskStateTable } from './TaskStateTable';
 import { useAppSelector } from '../../hooks';
 import { getAllTaskOfUser } from '../../firebase/providers';
+import { EstadoTarea } from '../interfaces/Operaciones.interface';
 
 export const UserTable = () => {
   const { photoURL, id } = useAppSelector(state => state.auth);
@@ -49,7 +50,7 @@ export const UserTable = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {usuarios.map(({ ejecutor, observacionPrevia, estado, key }) => (
+            {usuarios.map(({ ejecutor, observacionPrevia, estado, key }:{estado: EstadoTarea, observacionPrevia:string, key:string, ejecutor:any}) => (
               <TableRow key={key} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                 <TableCell
                   component="th"
@@ -72,7 +73,7 @@ export const UserTable = () => {
                   {observacionPrevia}
                 </TableCell>
                 <TableCell sx={{ fontSize: '0.8rem' }} padding="none" align="center">
-                  <TaskStateTable estado={estado} />
+                  <TaskStateTable estado={estado} table />
                 </TableCell>
                 <TableCell sx={{ fontSize: '0.8rem', display: {xs: 'none', sm: 'table-cell'} }} padding="none" align="center">
                   10/5/2023

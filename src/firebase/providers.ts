@@ -43,7 +43,9 @@ export const loginFirebase = async (email: any, password: any) => {
   console.log(user);
 };
 
-const getUser = async(userProperties: any, typeOfProperties: UserProperties ):Promise<any> =>{
+
+
+const getUser = async(userProperties: string, typeOfProperties: UserProperties ):Promise<any> =>{
   
   const usuariosRef = collection(FirebaseDB, "Usuarios");
   const queryParams = query(usuariosRef, where(typeOfProperties, "==", userProperties));
@@ -59,6 +61,7 @@ const getUser = async(userProperties: any, typeOfProperties: UserProperties ):Pr
   return resultOfQuery
 
 }
+
 
 const getElement = async(elementProperties: any, typeOfProperties: ElementoProperties ):Promise<any> =>{
   
@@ -194,6 +197,7 @@ export const getAllTaskOfUser = async (id: string, rawData: boolean): Promise<Ta
   const querySnapshot = await getDocs(queryParams);
 
   const listOfTasks: any[] = [];
+  
   querySnapshot.forEach((doc) => {
     listOfTasks.push(doc.data());
   });
@@ -236,7 +240,7 @@ export const getUsersWithEmailFilter = async (
   }
 };
 
-export const getCollection = async (collectionName: string) => {
+export const getCollection = async (collectionName: Collection) => {
   const querySnapshot = await getDocs(collection(FirebaseDB, collectionName))
 
   const collectionData: any[] = [];
