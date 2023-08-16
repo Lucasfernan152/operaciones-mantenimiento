@@ -7,10 +7,24 @@ import { UpdateElementPage } from '../pages/UpdateElementPage';
 import { SearchTaskPage } from '../pages/SearchTaskPage';
 import { TaskByIdPage } from '../pages/TaskByIdPage';
 import { HomeLayout } from '../layout/HomeLayout';
+import { useMediaQuery } from '@mui/material';
+import { HomeLayoutMobile } from '../layout/HomeLayoutMobile';
 
-export const OperacionesRouter: React.FC = () => (
+export const ResponsiveDesign = ({children, mobile}:{children: any, mobile:boolean}) => {
 
-    <HomeLayout drawerWidth={250}>  
+
+    return ((mobile)? (<HomeLayout drawerWidth={250}>{children}</HomeLayout>)
+                    :(<HomeLayoutMobile>{children}</HomeLayoutMobile>))
+     
+   }
+   
+
+export const OperacionesRouter: React.FC = () => {
+    const matches = useMediaQuery('(min-width:600px)');
+
+
+return (    
+    <ResponsiveDesign mobile={matches}>  
         
         <Route path="/home/operaciones" exact={true} component={OperacionesPage}/>      
 
@@ -23,5 +37,9 @@ export const OperacionesRouter: React.FC = () => (
         <Route path="/task/:id" exact={true} component={TaskByIdPage} />
 
         <Redirect to="/home/operaciones" />
-    </HomeLayout>
+    </ResponsiveDesign>
 );
+}
+
+
+
