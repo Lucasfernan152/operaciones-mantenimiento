@@ -1,10 +1,10 @@
 import { GoogleAuthProvider, createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword, signInWithPopup, updateProfile } from "firebase/auth";
 import { FirebaseAuth, FirebaseDB } from "./config";
-import { DocumentData, DocumentReference, collection, doc, getDocs, query, setDoc, updateDoc, where } from "firebase/firestore";
+import { collection, doc, getDocs, query, setDoc, updateDoc, where } from "firebase/firestore";
 import { RegisterUser } from "../storage/auth/interfaces/User.interface";
 
 import { Collection, ElementoProperties, UserProperties } from "../operaciones/interfaces/Operaciones.interface";
-import { Tarea, Usuario } from "../storage/useStorage";
+import { Tarea } from "../storage/useStorage";
 
 const googleProvider = new GoogleAuthProvider();
 
@@ -31,16 +31,16 @@ export const signInWithGoogle = async () => {
 
 export const logoutFirebase = async () => await FirebaseAuth.signOut();
 
-export const loginFirebase = async (email: any, password: any) => {
+export const loginFirebase = async (email: string, password: string) => {
   const { user } = await signInWithEmailAndPassword(
     FirebaseAuth,
     email,
     password
   );
-
   const { uid } = user;
 
-  console.log(user);
+
+
 };
 
 
@@ -63,7 +63,7 @@ const getUser = async(userProperties: string, typeOfProperties: UserProperties )
 }
 
 
-const getElement = async(elementProperties: any, typeOfProperties: ElementoProperties ):Promise<any> =>{
+const getElement = async(elementProperties: string, typeOfProperties: ElementoProperties ):Promise<any> =>{
   
   const usuariosRef = collection(FirebaseDB, "Elementos");
   const queryParams = query(usuariosRef, where(typeOfProperties, "==", elementProperties));

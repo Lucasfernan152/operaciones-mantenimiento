@@ -15,5 +15,8 @@ export const lightTheme = createTheme({
             main: '#2E7D32',
         }
         
-    }
+    },
+    typography: {
+        fontFamily: ['Open Sans', 'Arial', 'sans-serif'].join(','),
+      },
 })
