@@ -1,14 +1,13 @@
-import React, { useState } from 'react';
 import { Box, Button, Input, IconButton, useMediaQuery } from '@mui/material';
-import { useHistory } from 'react-router-dom'; // Importa useHistory para manejar la redirección
+import { useNavigate } from 'react-router-dom'; // Importa useHistory para manejar la redirección
 import AddIcon from '@mui/icons-material/Add';
 import SearchIcon from '@mui/icons-material/Search';
 
 export const TableHeader = () => {
-  const history = useHistory(); // Obtiene la instancia de history
+  const navigate = useNavigate(); // Obtiene la instancia de history
 
   const redirectToNewTask = () => {
-    history.push('/home/new-task'); // Redirige a la ruta deseada
+    navigate('/home/new-task'); // Redirige a la ruta deseada
   };
   const isMobile = useMediaQuery('(max-width:768px)');
 

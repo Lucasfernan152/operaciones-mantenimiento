@@ -3,6 +3,7 @@ import { checkingCredentials, login, logout } from "./authSlice"
 
 import { Storage } from '@ionic/storage'
 import { RegisterUser } from "./interfaces/User.interface";
+import { useNavigate } from "react-router";
 
 // funciones para interactuar con el localStorage
 const storage = new Storage();

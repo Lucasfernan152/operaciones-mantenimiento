@@ -5,7 +5,7 @@ import { NavBar } from '../components/NavBar';
 import { useState } from 'react';
 import { useAppSelector } from '../../hooks';
 import { getMenuOptions } from '../helpers';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 
 
 export const HomeLayout = ({children, drawerWidth }: HomeLayoutProps) => {
@@ -13,10 +13,10 @@ export const HomeLayout = ({children, drawerWidth }: HomeLayoutProps) => {
 
 
     
-        const history = useHistory(); // Obtiene la instancia de history
+        const navigate = useNavigate(); // Obtiene la instancia de history
       
         const navigateByMenu = (path:string) => {
-          history.push(path); // Redirige a la ruta deseada
+            navigate(path); // Redirige a la ruta deseada
         };
 
 
