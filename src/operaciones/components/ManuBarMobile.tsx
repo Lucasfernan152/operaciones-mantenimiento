@@ -3,10 +3,9 @@ import BottomNavigation from '@mui/material/BottomNavigation';
 import BottomNavigationAction from '@mui/material/BottomNavigationAction';
 import FolderIcon from '@mui/icons-material/Folder';
 import RestoreIcon from '@mui/icons-material/Restore';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
 import { Grid } from '@mui/material';
 import { MenuButtonComponent } from './MenuButtonComponent';
+import { AccountCircle, HomeRounded } from '@mui/icons-material';
 
 
 export const MenuBarMobile = () => {
@@ -18,14 +17,15 @@ export const MenuBarMobile = () => {
 
   return (
     <Grid className='mb-4 ' sx={{position:'fixed', bottom:0, width:'92%'}}>
-    <BottomNavigation className='rounded-xl' sx={{ width: '100%', height:'58px', }} value={value} onChange={handleChange}>
+    <BottomNavigation className='rounded-xl shadow-lg bg-[#f1f1f1]' sx={{ width: '100%', height:'58px', }} value={value} onChange={handleChange}>
       <BottomNavigationAction
-        label="Recents"
+      showLabel={false}
+        color='primary.main'
         value="recents"
-        icon={<RestoreIcon />}
+        icon={<HomeRounded sx={{ fontSize: 36 }}/>}
       />
       <MenuButtonComponent/>
-      <BottomNavigationAction label="Folder" value="folder" icon={<FolderIcon />} />
+      <BottomNavigationAction color='primary.main' value="folder" icon={<AccountCircle sx={{ fontSize: 36 }} />} />
     </BottomNavigation>
     </Grid>
   );

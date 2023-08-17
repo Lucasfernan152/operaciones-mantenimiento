@@ -9,7 +9,7 @@ export const TaskUserComponent = ({fechaAviso, observacionPrevia, elemento, ejec
   return (
     <div
     
-    className="bg-white mx-4 my-2 p-2 w-full rounded-md">
+    className="bg-[#f1f1f1] mx-4 my-2 p-2 w-full rounded-md">
       <div className="flex w-full justify-between p-2 items-center">
         <h1 className="font-sans font-bold text-xl">{elemento.nombre}</h1>
         <Avatar sx={{ backgroundColor: "#151235" }}>{ejecutor.nombre.slice(0,1)}</Avatar>
