@@ -3,6 +3,7 @@ import { useAppSelector } from '../../hooks';
 import { useEffect, useState } from 'react';
 import { getAllTaskOfUser } from '../../firebase/providers';
 import { TaskUserComponent } from './TaskUserComponent';
+import { LoaderTaskMobile } from './SkeletonLoaders';
 
 
 export const ListTasksUser = () => {
@@ -26,12 +27,22 @@ export const ListTasksUser = () => {
 
   return (
     <div className="overflow-y-scroll w-full h-screen">
-    <Grid container className="w-full ">
-      {tareas.map(task => (
-        <TaskUserComponent key={task.id} {...task} />
-      ))}
+    <Grid container className="w-full">
+      {
+        loading ? <LoaderTaskMobile/>
+                : tareas.map(task => (
+                  <TaskUserComponent key={task.id} {...task} />
+                  ))
+      }
+
+      
       
     </Grid>
   </div>
   )
 }
+
+
+
+
+

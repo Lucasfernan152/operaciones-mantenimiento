@@ -17,6 +17,6 @@ export const lightTheme = createTheme({
         
     },
     typography: {
-        fontFamily: ['Open Sans', 'Arial', 'sans-serif'].join(','),
+        fontFamily: ['Poppins', 'Arial', 'sans-serif'].join(','),
       },
 })
