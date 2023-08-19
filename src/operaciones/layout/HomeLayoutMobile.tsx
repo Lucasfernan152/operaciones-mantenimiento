@@ -1,6 +1,5 @@
-import React from 'react'
-import { MenuButtonComponent } from '../components/MenuButtonComponent'
-import { MenuBarMobile } from '../components/ManuBarMobile';
+
+import { MenuBarMobile } from '../components/MenuBarMobile';
 
 export const HomeLayoutMobile = ({children}:any) => {
   return (

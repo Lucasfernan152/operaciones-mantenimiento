@@ -190,6 +190,39 @@ const addTaskToUser = async (idUser:string , id:string ) => {
 
 }
 
+export const getTaskById = async (taskId: string, rawData: boolean) => {
+  const queryParams = query(collection(FirebaseDB, "Tareas"), where("id", "==", taskId));
+  const taskSnapshot = await getDocs(queryParams);
+
+  if (taskSnapshot.empty) {
+    return null; // Retorna null si no se encuentra la tarea
+  }
+
+  const task = taskSnapshot.docs[0].data();
+
+  if (!rawData) {
+    return task;
+  }
+
+  const [creador, ejecutor, elemento] = await Promise.all([
+    getUser(task.creador, 'id'),
+    getUser(task.ejecutor, 'id'),
+    getElement(task.elemento, 'id')
+  ]);
+
+  const rawDataResponse = {
+    ...task,
+    creador,
+    ejecutor,
+    elemento,
+    key: `${task.id}` // Asegúrate de definir "index" antes de usarlo
+  };
+
+  return rawDataResponse;
+}
+
+
+
 
 
 export const getAllTaskOfUser = async (id: string, rawData: boolean): Promise<Tarea[]> => {

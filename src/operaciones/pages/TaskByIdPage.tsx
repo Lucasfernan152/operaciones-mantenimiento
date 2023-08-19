@@ -21,7 +21,7 @@ export const TaskByIdPage = () => {
           minWidth: "100vw",
           overflowY: "auto", // Cambiar a overflowY para permitir el scroll vertical
         }}>
-          <Grid  className='h-[85%] w-[92%] rounded-xl shadow-2xl '>
+          <Grid  className='h-[100%] w-[92%] '>
               <TaskPageComponent/>
           </Grid>
       </Grid>

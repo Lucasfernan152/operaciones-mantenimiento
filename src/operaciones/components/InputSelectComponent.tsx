@@ -4,7 +4,7 @@ import { Equipo, Estado, Prioridad } from "../../storage/useStorage";
 
 
 
-export const InputSelectComponent = ({title, id, selectInput }:{title: string, id:string, selectInput:Array<{ key: string; value: Equipo | Prioridad | Estado }>}) => {
+export const InputSelectComponent = ({title, id, selectInput, variant = "outlined"}:{ title: string, id:string, selectInput:Array<{ key: string; value: Equipo | Prioridad | Estado }> , variant:any}) => {
 
 const [inputValue, setInputValue] = useState('');
 
@@ -15,7 +15,9 @@ const [inputValue, setInputValue] = useState('');
   };
 
   return (
-    <FormControl sx={{
+    <FormControl
+    variant={variant}
+    sx={{
       mt:2,
     }}>
       <InputLabel id={id} >{title}</InputLabel>
