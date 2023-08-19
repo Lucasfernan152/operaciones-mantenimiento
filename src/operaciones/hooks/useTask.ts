@@ -1,5 +1,5 @@
 
-import { addItemAtColumn } from "../../firebase/providers"
+import { addItemAtColumn, updateTask } from "../../firebase/providers"
 import { Tarea, Prioridad, Equipo } from "../../storage/useStorage"
 
 
@@ -15,4 +15,14 @@ export const createNewTask = async (id:string, idAssignedUser: string, idElement
     await addItemAtColumn({...tareaCreada}, 'Tareas')
     
 
+}
+
+export const taskUpdated = async (id:string, observ:string, state:string) => {
+
+    const setTaskValue = {
+        estado:state,
+        observacionFinal:observ
+    }
+    
+    await updateTask(id, setTaskValue)
 }

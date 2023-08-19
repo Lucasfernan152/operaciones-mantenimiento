@@ -1,15 +1,14 @@
 import { Avatar, Divider, Fab, Skeleton, TextField } from '@mui/material'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { TaskStateTable } from './TaskStateTable'
 import { getTimeStamp } from '../helpers'
-import { AccessTime, CheckRounded, CloseRounded, EditNoteRounded, KeyboardArrowDown, KeyboardArrowUp, KeyboardDoubleArrowUp, TaskAltOutlined } from '@mui/icons-material'
+import { AccessTime, CheckRounded, CloseRounded, EditNoteRounded} from '@mui/icons-material'
 import { PriorityIcon } from './PriorityIcon';
-import { getTaskById } from '../../firebase/providers'
+import { getTaskById, updateTask } from '../../firebase/providers'
 import { useParams } from 'react-router'
-import { DocumentData } from 'firebase/firestore'
-import { Estado } from '../../storage/useStorage'
 import { InputSelectComponent } from './InputSelectComponent'
-import { useMappedEnums } from '../hooks'
+import { taskUpdated, useMappedEnums } from '../hooks'
+import { Estado } from '../../storage/useStorage'
 
 
 export const TaskPageComponent = () => {
@@ -20,6 +19,7 @@ export const TaskPageComponent = () => {
 
   const stateArray = useMappedEnums(Estado);
 
+  
   const {id} = useParams()
 
   const getAsyncTask = async () => {
@@ -29,16 +29,32 @@ export const TaskPageComponent = () => {
   
   };
 
+  const startUpdateTask = (event: any) => {
+    event?.preventDefault();
+
+    const form = event.target;
+
+    const formData = new FormData(form);
+    const state = formData.get("Estado") as Estado;
+    const observ = formData.get("Observacion") as Estado;
+
+
+    console.log("llega")
+    taskUpdated(id!, observ, state)
+
+    
+  };
+
 
   useEffect(() => {
     getAsyncTask()
   
-  },[loading] )
+  },[loading, edit] )
   
   
   if (loading) return <Skeleton  variant={'rounded'} sx={{height:"80%", borderRadius:'20px', backgroundColor:'#f1f1f1a0'}}/>
 
-  const {elemento, equipo, prioridad, observacionPrevia, fechaAviso, creador, ejecutor} = task
+  const {elemento, equipo, prioridad, estado ,observacionPrevia, fechaAviso, creador, ejecutor} = task
  
 
   if (!edit) return (
@@ -68,7 +84,7 @@ export const TaskPageComponent = () => {
         </div>
         <div className="flex justify-between items-center">
             <h2 className='font-bold text-gray-500'>Estado</h2>
-            <TaskStateTable estado={"Pendiente"} table={false} />
+            <TaskStateTable estado={estado} table={false} />
         </div>
         <div className="flex justify-between items-center">
             <h2 className='font-bold text-gray-500'>Creador</h2>
@@ -105,29 +121,32 @@ export const TaskPageComponent = () => {
         </div>
         
         <Divider sx={{ marginY: 4 }} />
-
+        <form action="" onSubmit={startUpdateTask}>
         <div className='min-h-[200px] flex flex-col justify-between'>
+          
           <TextField
             fullWidth
             id="outlined-multiline-flexible"
             label="Observacion"
+            name="Observacion"
             variant='standard'
             multiline
             maxRows={4}
           />
           <InputSelectComponent
-                  title={"Prioridad"}
-                  id={"id-priority"}
+                  title={"Estado"}
+                  id={"id-state"}
                   variant='standard'
                   selectInput={stateArray}
                 />
+          
         </div>
         <Divider sx={{ marginY: 4 }} />
         <div className='flex flex-col gap-6'>
         
 
         <div className='flex justify-around items-center w-full'>
-          <Fab onClick={()=> setEdit(false)} color="success" sx={{boxShadow:'0px 5px 10px rgba(0,0,0,0.2)' ,}} size='large' aria-label="Editar Tarea">
+          <Fab type='submit' color="success" sx={{boxShadow:'0px 5px 10px rgba(0,0,0,0.2)' ,}} size='large' aria-label="Editar Tarea">
             <CheckRounded sx={{fontSize:32}} />
             
 
@@ -139,6 +158,7 @@ export const TaskPageComponent = () => {
           </Fab>
         </div>
         </div>
+        </form>
     </div>
     </>
   )

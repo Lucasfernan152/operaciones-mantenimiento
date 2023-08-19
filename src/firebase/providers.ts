@@ -1,9 +1,28 @@
-import { GoogleAuthProvider, createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword, signInWithPopup, updateProfile } from "firebase/auth";
+import {
+  GoogleAuthProvider,
+  createUserWithEmailAndPassword,
+  getAuth,
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  updateProfile,
+} from "firebase/auth";
 import { FirebaseAuth, FirebaseDB } from "./config";
-import { collection, doc, getDocs, query, setDoc, updateDoc, where } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDocs,
+  query,
+  setDoc,
+  updateDoc,
+  where,
+} from "firebase/firestore";
 import { RegisterUser } from "../storage/auth/interfaces/User.interface";
 
-import { Collection, ElementoProperties, UserProperties } from "../operaciones/interfaces/Operaciones.interface";
+import {
+  Collection,
+  ElementoProperties,
+  UserProperties,
+} from "../operaciones/interfaces/Operaciones.interface";
 import { Tarea } from "../storage/useStorage";
 
 const googleProvider = new GoogleAuthProvider();
@@ -38,17 +57,17 @@ export const loginFirebase = async (email: string, password: string) => {
     password
   );
   const { uid } = user;
-
-
-
 };
 
-
-
-const getUser = async(userProperties: string, typeOfProperties: UserProperties ):Promise<any> =>{
-  
+const getUser = async (
+  userProperties: string,
+  typeOfProperties: UserProperties
+): Promise<any> => {
   const usuariosRef = collection(FirebaseDB, "Usuarios");
-  const queryParams = query(usuariosRef, where(typeOfProperties, "==", userProperties));
+  const queryParams = query(
+    usuariosRef,
+    where(typeOfProperties, "==", userProperties)
+  );
   const querySnapshot = await getDocs(queryParams);
 
   if (querySnapshot.docs.length === 0) {
@@ -57,16 +76,19 @@ const getUser = async(userProperties: string, typeOfProperties: UserProperties )
 
   // Supongamos que solo quieres la primera tarea encontrada
   const resultOfQuery = querySnapshot.docs[0].data();
-  
-  return resultOfQuery
 
-}
+  return resultOfQuery;
+};
 
-
-const getElement = async(elementProperties: string, typeOfProperties: ElementoProperties ):Promise<any> =>{
-  
+const getElement = async (
+  elementProperties: string,
+  typeOfProperties: ElementoProperties
+): Promise<any> => {
   const usuariosRef = collection(FirebaseDB, "Elementos");
-  const queryParams = query(usuariosRef, where(typeOfProperties, "==", elementProperties));
+  const queryParams = query(
+    usuariosRef,
+    where(typeOfProperties, "==", elementProperties)
+  );
   const querySnapshot = await getDocs(queryParams);
 
   if (querySnapshot.docs.length === 0) {
@@ -75,15 +97,19 @@ const getElement = async(elementProperties: string, typeOfProperties: ElementoPr
 
   // Supongamos que solo quieres la primera tarea encontrada
   const resultOfQuery = querySnapshot.docs[0].data();
-  
-  return resultOfQuery
 
-}
+  return resultOfQuery;
+};
 
-const getReconectador = async(reconectadoresProps: any, typeOfProperties: ElementoProperties ):Promise<any> =>{
-  
+const getReconectador = async (
+  reconectadoresProps: any,
+  typeOfProperties: ElementoProperties
+): Promise<any> => {
   const usuariosRef = collection(FirebaseDB, "Reconectadores");
-  const queryParams = query(usuariosRef, where(typeOfProperties, "==", reconectadoresProps));
+  const queryParams = query(
+    usuariosRef,
+    where(typeOfProperties, "==", reconectadoresProps)
+  );
   const querySnapshot = await getDocs(queryParams);
 
   if (querySnapshot.docs.length === 0) {
@@ -92,15 +118,14 @@ const getReconectador = async(reconectadoresProps: any, typeOfProperties: Elemen
 
   // Supongamos que solo quieres la primera tarea encontrada
   const resultOfQuery = querySnapshot.docs[0].data();
-  
-  return resultOfQuery
 
-}
+  return resultOfQuery;
+};
 
-
-
-
-export const loginWithEmailPassword = async (email: string, password: string) => {
+export const loginWithEmailPassword = async (
+  email: string,
+  password: string
+) => {
   try {
     const resp = await signInWithEmailAndPassword(
       FirebaseAuth,
@@ -108,10 +133,8 @@ export const loginWithEmailPassword = async (email: string, password: string) =>
       password
     );
     const { uid, photoURL, displayName } = resp.user;
-    
-    const userOfCollection = await getUser(email, 'mail')
-    
 
+    const userOfCollection = await getUser(email, "mail");
 
     return {
       ok: true,
@@ -129,7 +152,7 @@ export const loginWithEmailPassword = async (email: string, password: string) =>
 };
 
 export const registerWhitEmailPassword = async (user: RegisterUser) => {
-  const { email, password, displayName, id, userRol} = user;
+  const { email, password, displayName, id, userRol } = user;
 
   const { currentUser } = getAuth();
 
@@ -165,33 +188,30 @@ export const registerWhitEmailPassword = async (user: RegisterUser) => {
 export const addItemAtColumn = async (item: any, collection: Collection) => {
   const { id, ejecutor } = item;
 
-  const document = doc(FirebaseDB, collection, id)
+  const document = doc(FirebaseDB, collection, id);
 
   await setDoc(document, item);
 
   if (collection === "Tareas") {
-    return await addTaskToUser(ejecutor, id)
+    return await addTaskToUser(ejecutor, id);
   }
-
 };
 
+const addTaskToUser = async (idUser: string, id: string) => {
+  const userProps = await getUser(idUser, "id");
 
+  const { tareas = [] } = userProps;
 
-const addTaskToUser = async (idUser:string , id:string ) => {
-
-    const userProps = await getUser(idUser, 'id')
-
-    const { tareas = [] } = userProps
-
-
-    await updateDoc(doc(FirebaseDB, 'Usuarios', idUser), {
-      tareas: [...tareas, id]
-    })
-
-}
+  await updateDoc(doc(FirebaseDB, "Usuarios", idUser), {
+    tareas: [...tareas, id],
+  });
+};
 
 export const getTaskById = async (taskId: string, rawData: boolean) => {
-  const queryParams = query(collection(FirebaseDB, "Tareas"), where("id", "==", taskId));
+  const queryParams = query(
+    collection(FirebaseDB, "Tareas"),
+    where("id", "==", taskId)
+  );
   const taskSnapshot = await getDocs(queryParams);
 
   if (taskSnapshot.empty) {
@@ -205,9 +225,9 @@ export const getTaskById = async (taskId: string, rawData: boolean) => {
   }
 
   const [creador, ejecutor, elemento] = await Promise.all([
-    getUser(task.creador, 'id'),
-    getUser(task.ejecutor, 'id'),
-    getElement(task.elemento, 'id')
+    getUser(task.creador, "id"),
+    getUser(task.ejecutor, "id"),
+    getElement(task.elemento, "id"),
   ]);
 
   const rawDataResponse = {
@@ -215,45 +235,44 @@ export const getTaskById = async (taskId: string, rawData: boolean) => {
     creador,
     ejecutor,
     elemento,
-    key: `${task.id}` // Asegúrate de definir "index" antes de usarlo
+    key: `${task.id}`, // Asegúrate de definir "index" antes de usarlo
   };
 
   return rawDataResponse;
-}
+};
 
-
-
-
-
-export const getAllTaskOfUser = async (id: string, rawData: boolean): Promise<Tarea[]> => {
-  const queryParams = query(collection(FirebaseDB, "Tareas"), where("ejecutor", "==", id));
+export const getAllTaskOfUser = async (
+  id: string,
+  rawData: boolean
+): Promise<Tarea[]> => {
+  const queryParams = query(
+    collection(FirebaseDB, "Tareas"),
+    where("ejecutor", "==", id)
+  );
   const querySnapshot = await getDocs(queryParams);
 
   const listOfTasks: any[] = [];
-  
+
   querySnapshot.forEach((doc) => {
     listOfTasks.push(doc.data());
   });
 
   if (!rawData) return listOfTasks;
 
-  const rawDataResponse = await Promise.all(listOfTasks.map(async (task, index) => {
-    task.ejecutor = await getUser(task.ejecutor, 'id');
-    task.creador = await getUser(task.creador, 'id');
-    task.elemento = await getElement(task.elemento, 'id');
-    task.key = `${task.id}_${index}`; // Generar clave única usando ID y el índice
-    return task;
-
-  }));
+  const rawDataResponse = await Promise.all(
+    listOfTasks.map(async (task, index) => {
+      task.ejecutor = await getUser(task.ejecutor, "id");
+      task.creador = await getUser(task.creador, "id");
+      task.elemento = await getElement(task.elemento, "id");
+      task.key = `${task.id}_${index}`; // Generar clave única usando ID y el índice
+      return task;
+    })
+  );
 
   return rawDataResponse;
 };
 
-
-
-export const getUsersWithEmailFilter = async (
-  email: string
-) => {
+export const getUsersWithEmailFilter = async (email: string) => {
   const listOfUsers = await getDocs(collection(FirebaseDB, "Usuarios"));
 
   const userWhiteList: any[] = [];
@@ -262,19 +281,17 @@ export const getUsersWithEmailFilter = async (
     userWhiteList.push(userChildren.data());
   });
 
-  const checkValidUser = userWhiteList.filter(
-    ( User ) => User.mail === email
-  );
+  const checkValidUser = userWhiteList.filter((User) => User.mail === email);
 
   if (checkValidUser.length !== 0) {
-    return checkValidUser
+    return checkValidUser;
   } else {
     return false;
   }
 };
 
 export const getCollection = async (collectionName: Collection) => {
-  const querySnapshot = await getDocs(collection(FirebaseDB, collectionName))
+  const querySnapshot = await getDocs(collection(FirebaseDB, collectionName));
 
   const collectionData: any[] = [];
 
@@ -285,4 +302,15 @@ export const getCollection = async (collectionName: Collection) => {
   });
 
   return collectionData;
+};
+
+export const updateTask = async (taskId: string, updatedValues: any) => {
+  const taskToUpdate = doc(FirebaseDB, "Tareas", taskId);
+  try {
+    await updateDoc(taskToUpdate, updatedValues);
+  }
+  catch (e){
+    alert("Task Failed")
+  }
+  
 };

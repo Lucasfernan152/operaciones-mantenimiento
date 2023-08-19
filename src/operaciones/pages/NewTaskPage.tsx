@@ -111,12 +111,14 @@ export const NewTaskPage = () => {
                   />
                 </div>
                 <InputSelectComponent
+                  variant="outlined"
                   title={"Prioridad"}
                   id={"id-priority"}
                   selectInput={priorityArray}
                 />
 
                 <InputSelectComponent
+                  variant={"outlined"}
                   title={"Equipo"}
                   id={"id-device"}
                   selectInput={deviceArray}
