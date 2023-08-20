@@ -7,14 +7,21 @@ import { MenuButtonComponent } from './MenuButtonComponent';
 import { AccountCircle, HomeRounded } from '@mui/icons-material';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
+import { startLogout } from '../../storage/auth';
+import { useAppDispatch } from '../../hooks';
 
 
 export const MenuBarMobile = () => {
 
+  const dispatch = useAppDispatch()
   const navigate = useNavigate()
 
   const navigateToMenu = () => {
     navigate('/home/operaciones')
+  }
+
+  const onLogout = () => {
+    dispatch(startLogout())
   }
 
   const [value, setValue] = useState('recents');
@@ -34,7 +41,7 @@ export const MenuBarMobile = () => {
         icon={<HomeRounded sx={{ fontSize: 36 }}/>}
       />
       <MenuButtonComponent/>
-      <BottomNavigationAction color='primary.main' value="folder" icon={<AccountCircle sx={{ fontSize: 36 }} />} />
+      <BottomNavigationAction onClick={onLogout} color='primary.main' value="folder" icon={<AccountCircle sx={{ fontSize: 36 }} />} />
     </BottomNavigation>
     </Grid>
   );

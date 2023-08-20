@@ -26,7 +26,7 @@ export const ListTasksUser = () => {
 
 
   return (
-    <div className="overflow-y-scroll w-full h-screen">
+    <div className="overflow-y-scroll w-full h-screen pb-24">
     <Grid container className="w-full">
       {
         loading ? <LoaderTaskMobile/>

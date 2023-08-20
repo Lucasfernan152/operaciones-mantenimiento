@@ -10,14 +10,19 @@ import {
   EditNoteRounded,
 } from "@mui/icons-material";
 import { PriorityIcon } from "./PriorityIcon";
-import { getTaskById, updateTask } from "../../firebase/providers";
+import { getTaskById} from "../../firebase/providers";
 import { useNavigate, useParams } from "react-router";
-import { InputSelectComponent } from "./InputSelectComponent";
-import { taskUpdated, useMappedEnums } from "../hooks";
-import { Estado } from "../../storage/useStorage";
+
+import { taskUpdated} from "../hooks";
+
 import { LoadingButton } from "@mui/lab";
+import { useAppSelector } from '../../hooks';
+import { Equipo, Estado, Prioridad } from '../../storage/useStorage';
+import { TaskEditAdminFormComponent, TaskEditFormComponent } from './TaskEditFormComponent';
 
 export const TaskPageComponent = () => {
+  
+  const {userRol} = useAppSelector(state => state.auth)
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -27,7 +32,6 @@ export const TaskPageComponent = () => {
   const [showSnackbar, setShowSnackbar] = useState(false);
   const [send, setSend] = useState(false);
 
-  const stateArray = useMappedEnums(Estado);
 
   const getAsyncTask = async () => {
     const resolvedTask = await getTaskById(id!, true);
@@ -48,10 +52,12 @@ export const TaskPageComponent = () => {
   
     const formData = new FormData(form);
     const state = formData.get("Estado") as Estado;
-    const observ = formData.get("Observacion") as Estado;
+    const device = formData.get("Equipo") as Equipo;
+    const priority = formData.get("Prioridad") as Prioridad;
+    const observ: string = formData.get("Observacion") as string ;
   
     try {
-      await taskUpdated(id!, observ, state);
+      await taskUpdated(id!, observ, state, device, priority, userRol!);
       setTimeout(() => {
          // Ocultar el Snackbar después de un tiempo
         setEdit(false);
@@ -63,6 +69,8 @@ export const TaskPageComponent = () => {
       console.error(error);
       setSend(false);
     }
+
+    form.reset()
   };
 
   useEffect(() => {
@@ -94,7 +102,7 @@ export const TaskPageComponent = () => {
 
   if (!edit)
     return (
-      <div className="bg-[#f1f1f1] p-5 w-full rounded-xl shadow-2xl ">
+      <div className="bg-[#f1f1f1] p-5 w-full roundedCard shadow-md ">
         <div className="flex w-full justify-between p-2 items-center">
           <h1 className="font-sans font-bold text-xl">
             <span className="text-sm text-gray-500 font-bold">Elemento</span>
@@ -173,7 +181,7 @@ export const TaskPageComponent = () => {
   if (edit)
     return (
       <>
-        <div className="bg-[#f1f1f1] p-5 w-full rounded-xl shadow-2xl ">
+        <div className="bg-[#f1f1f1] p-5 w-full roundedCard shadow-2xl ">
           <div className="flex w-full justify-between p-2 items-center">
             <h1 className="font-sans font-bold text-xl">
               <span className="text-sm text-gray-500 font-bold">Elemento</span>
@@ -195,21 +203,10 @@ export const TaskPageComponent = () => {
           <Divider sx={{ marginY: 4 }} />
           <form action="" onSubmit={startUpdateTask}>
             <div className="min-h-[200px] flex flex-col justify-between">
-              <TextField
-                fullWidth
-                id="outlined-multiline-flexible"
-                label="Observacion"
-                name="Observacion"
-                variant="standard"
-                multiline
-                maxRows={4}
-              />
-              <InputSelectComponent
-                title={"Estado"}
-                id={"id-state"}
-                variant="standard"
-                selectInput={stateArray}
-              />
+              {
+                (userRol === "ADMIN") ? <TaskEditAdminFormComponent/>
+                                      : <TaskEditFormComponent/>
+              }
             </div>
             <Divider sx={{ marginY: 4 }} />
             <div className="flex flex-col gap-6">

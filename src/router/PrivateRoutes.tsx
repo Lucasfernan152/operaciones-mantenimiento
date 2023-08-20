@@ -27,15 +27,15 @@ export const PrivateRoutes = () => {
 
   return (
     <ResponsiveDesign mobile={matches}>
-    <Routes>
-          <Route path="/home/operaciones" element={<OperacionesPage />} />
-          <Route path="/home/new-task" element={<NewTaskPage />} />
-          <Route path="/home/new-element" element={<NewElementPage />} />
-          <Route path="/update-element" element={<UpdateElementPage />} />
-          <Route path="/search-task" element={<SearchTaskPage />} />
-          <Route path="/task/:id" element={<TaskByIdPage />} />
-          <Route path="*" element={<Navigate to="/home/operaciones" />} />
-    </Routes >
+      <Routes>
+            <Route path="/home/operaciones" element={<OperacionesPage />} />
+            <Route path="/home/new-task" element={<NewTaskPage />} />
+            <Route path="/home/new-element" element={<NewElementPage />} />
+            <Route path="/update-element" element={<UpdateElementPage />} />
+            <Route path="/search-task" element={<SearchTaskPage />} />
+            <Route path="/task/:id" element={<TaskByIdPage />} />
+            <Route path="*" element={<Navigate to="/home/operaciones" />} />
+      </Routes>
     </ResponsiveDesign>
   )
 }

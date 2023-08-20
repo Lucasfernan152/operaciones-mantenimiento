@@ -14,14 +14,14 @@ export const TaskByIdPage = () => {
         direction="column"
         alignItems="center"
         justifyContent="start"
-        className=" bg-gradient-to-tr from-sky-700 to-blue-800 pt-4 md:pt-20 pb-6"
+        className=" bg-gradient-to-tr pt-20 from-sky-700 to-blue-800 md:pt-20 pb-6"
         sx={{
           minHeight: "100vh",
           height: "auto", // Cambiar a 100vh
           minWidth: "100vw",
           overflowY: "auto", // Cambiar a overflowY para permitir el scroll vertical
         }}>
-          <Grid  className='h-[100%] w-[92%] '>
+          <Grid  className='h-[100%] w-[88%] '>
               <TaskPageComponent/>
           </Grid>
       </Grid>

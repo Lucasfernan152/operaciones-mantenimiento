@@ -5,9 +5,10 @@ import { createNewTask, useMappedEnums } from "../hooks"
 
 import { Equipo, Prioridad } from "../../storage/useStorage";
 
-import { Button, FormControl, Grid, TextField } from "@mui/material";
+import { Button, CircularProgress, FormControl, Grid, TextField } from "@mui/material";
 import { InputSelectComponent } from "../components/InputSelectComponent";
 import { DropDownAsyncTask } from "../components/DropDownAsyncTask";
+import { toast } from "sonner";
 
 
 export const NewTaskPage = () => {
@@ -43,6 +44,7 @@ export const NewTaskPage = () => {
   };
 
   const onSubmit = (event: any) => {
+    toast(<div className="flex justify-start w-full h-fullitems-center rounded-xl font-semibold text-sky-600"><CircularProgress size={20} className='mr-5'/> Actualizando tarea...</div>)
     event?.preventDefault();
 
     const form = event.target;
@@ -56,6 +58,7 @@ export const NewTaskPage = () => {
 
     createNewTask(id!, usuario, elemento, priority, device,  observationsValue!.toString())
 
+    toast.success(`Tarea asignada con exito`)
     
   };
 
@@ -67,9 +70,9 @@ export const NewTaskPage = () => {
           direction="column"
           alignItems="center"
           justifyContent="center"
-          className="bg-gradient-to-tr from-sky-700 to-blue-800 pt-20 pb-6"
+          className="bg-gradient-to-tr from-sky-700 to-blue-800 md:pt-20 pb-6"
           sx={{
-            minHeight: "100%",
+            minHeight: "100vh",
             height: "auto", // Cambiar a 100vh
             minWidth: "100vw",
             overflowY: "auto", // Cambiar a overflowY para permitir el scroll vertical
@@ -101,6 +104,7 @@ export const NewTaskPage = () => {
                 </Grid>
                 <div className="md:mt-4">
                   <TextField
+                    variant="standard"
                     label="Observaciones"
                     type="text"
                     placeholder="Observaciones..."
@@ -111,14 +115,14 @@ export const NewTaskPage = () => {
                   />
                 </div>
                 <InputSelectComponent
-                  variant="outlined"
+                  variant="standard"
                   title={"Prioridad"}
                   id={"id-priority"}
                   selectInput={priorityArray}
                 />
 
                 <InputSelectComponent
-                  variant={"outlined"}
+                  variant={"standard"}
                   title={"Equipo"}
                   id={"id-device"}
                   selectInput={deviceArray}
@@ -135,7 +139,8 @@ export const NewTaskPage = () => {
                   justifyContent: "center",
                   gap: "0.75rem", // Ajusta el valor según lo necesites
                   paddingY: "0.625rem",
-                  marginY: 2, // Ajusta el valor según lo necesites
+                  marginY: 2,
+                  marginTop:{xs:10, md:0,}, // Ajusta el valor según lo necesites
                   borderRadius: "0.375rem", // Ajusta el valor según lo necesites
                   fontSize: "1rem", // Ajusta el valor según lo necesites
                   fontWeight: "500", // Puedes ajustar el valor según lo necesites

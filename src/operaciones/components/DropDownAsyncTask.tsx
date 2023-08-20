@@ -70,6 +70,7 @@ export const DropDownAsyncTask = ({ column, onSelect }: any) => {
           {...params}
           label={`${column} a Asignar`}
           name="assignedUser"
+          variant="standard"
           InputProps={{
             ...params.InputProps,
             endAdornment: (

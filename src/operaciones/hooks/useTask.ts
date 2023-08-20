@@ -12,17 +12,30 @@ export const createNewTask = async (id:string, idAssignedUser: string, idElement
 
     const tareaCreada = new Tarea( id, idElement, idAssignedUser, priority, device, previousDescription)
     
+    console.log(tareaCreada)
+
     await addItemAtColumn({...tareaCreada}, 'Tareas')
     
 
 }
 
-export const taskUpdated = async (id:string, observ:string, state:string) => {
+export const taskUpdated = async (id:string, observ:string, state:string, device:string ,priority:string, rol:string) => {
 
-    const setTaskValue = {
+    const setTaskValue:any = {
         estado:state,
-        observacionFinal:observ
+        observacionFinal:observ,
     }
     
+    console.log(rol)
+
+    if (rol === "ADMIN") {
+
+        setTaskValue.equipo = device
+        setTaskValue.prioridad = priority
+
+        }
+    
+    console.log(setTaskValue)
+
     await updateTask(id, setTaskValue)
 }

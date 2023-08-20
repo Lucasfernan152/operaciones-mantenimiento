@@ -18,7 +18,7 @@ export const OperacionesPage = () => {
         direction="column"
         alignItems="center"
         justifyContent="center"
-        className=" bg-gradient-to-tr from-sky-700 to-blue-800 pt-5 md:pt-20 pb-6"
+        className={`bg-gradient-to-tr from-sky-500 to-blue-800 md:pt-20 pb-6 ${(userRol !== 'ADMIN') ? 'pt-20' : ''}`}
         sx={{
           minHeight: "100vh",
           height: "auto", // Cambiar a 100vh
@@ -29,21 +29,22 @@ export const OperacionesPage = () => {
         {userRol === "ADMIN" ? (
           <Grid
             item
-            className="shadow-xl"
+            className="shadow-xl h-full"
             alignItems="center"
             justifyContent="center"
             xs={3}
             sx={{
-              width: { sm: "80%", xs: "100%" },
+              width: { sm: "80%", xs: "90%" },
               backgroundColor: "#f1f1f1",
               paddingY: 3,
-              borderRadius: 2,
+              paddingX:2,
+              borderRadius: '20px',
             }}
           >
             <TableHeader />
             <UserTable />
           </Grid>
-        ) :( <ListTasksUser />)}
+        ) :( <ListTasksUser /> )}
       </Grid>
     </>
   );

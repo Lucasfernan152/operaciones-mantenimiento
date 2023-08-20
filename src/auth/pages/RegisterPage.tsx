@@ -62,6 +62,7 @@ export const RegisterPage = () => {
                 type="text"
                 placeholder="Sergio"
                 fullWidth
+                variant="standard"
                 name="firstName"
                 value={firstName}
                 onChange={onInputChange}
@@ -69,6 +70,7 @@ export const RegisterPage = () => {
             </Grid>
             <Grid item xs={6}>
               <TextField
+              variant="standard"
                 label="Apellido"
                 type="text"
                 placeholder="Sergio"
@@ -80,6 +82,7 @@ export const RegisterPage = () => {
             </Grid>
           </Grid>
           <TextField
+          variant="standard"
             label="Correo"
             type="email"
             placeholder="example@edensa.com.ar"
@@ -89,6 +92,7 @@ export const RegisterPage = () => {
             onChange={onInputChange}
           />
           <TextField
+          variant="standard"
             label="Contraseña"
             type="password"
             placeholder=""
@@ -99,6 +103,7 @@ export const RegisterPage = () => {
           />
 
           <TextField
+          variant="standard"
             label="Confirmar Contraseña"
             type="password"
             placeholder=""

@@ -38,6 +38,7 @@ export const LoginPage = () => {
           <TextField
             label="Correo"
             type="email"
+            variant="standard"
             placeholder='example@edensa.com.ar'
             fullWidth
             name="email"
@@ -45,6 +46,7 @@ export const LoginPage = () => {
             onChange={onInputChange}
           />
           <TextField
+          variant="standard"
             label="Contraseña"
             type="password"
             placeholder='Contrasena'
