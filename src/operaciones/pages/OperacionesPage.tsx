@@ -46,7 +46,6 @@ export const OperacionesPage = () => {
                               }}
                           >
                             
-                            <TableHeader/>
                               <UserTable/>
                           </Grid>):(
                             <ListTasksUser/>
