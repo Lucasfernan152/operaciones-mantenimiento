@@ -45,6 +45,7 @@ export const NewTaskPage = () => {
 
   const onSubmit = (event: any) => {
     toast(<div className="flex justify-start w-full h-fullitems-center rounded-xl font-semibold text-sky-600"><CircularProgress size={20} className='mr-5'/> Actualizando tarea...</div>)
+    
     event?.preventDefault();
 
     const form = event.target;
@@ -58,7 +59,9 @@ export const NewTaskPage = () => {
 
     createNewTask(id!, usuario, elemento, priority, device,  observationsValue!.toString())
 
-    toast.success(`Tarea asignada con exito`)
+    setTimeout(()=>{toast.success(`Tarea asignada con exito`)},1000)
+
+    form.reset()
     
   };
 

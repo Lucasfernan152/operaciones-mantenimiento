@@ -4,8 +4,7 @@ import AddIcon from '@mui/icons-material/Add';
 import SearchIcon from '@mui/icons-material/Search';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { TaskStateTable } from './TaskStateTable';
-import { useAppSelector } from '../../hooks';
-import { getAllTask, getAllTaskOfUser } from '../../firebase/providers';
+import { getAllTask } from '../../firebase/providers';
 import { EstadoTarea } from '../interfaces/Operaciones.interface';
 import { getTimeStamp } from '../helpers';
 import { useNavigate } from 'react-router-dom';
@@ -24,7 +23,7 @@ export const UserTable = () => {
   const [selectedIndex, setSelectedIndex] = useState(1);
 
   const setAsyncUsers = async () => {
-    //const allUsers = await getAllTaskOfUser(id!, true);
+
     const allUsers = await getAllTask( true );
     const resolvedUsers = await Promise.all(allUsers);
     setUsuarios(resolvedUsers);
@@ -85,7 +84,7 @@ export const UserTable = () => {
 
   useEffect(() => {
     setPage(0)
-  }, filteredUsuarios)
+  }, [filteredUsuarios])
   
 
   return (
@@ -117,7 +116,6 @@ export const UserTable = () => {
               <AddIcon />
             </IconButton>
             <IconButton
-              onClick={() => {}}
               sx={{
                 backgroundColor: 'primary.main',
                 color: 'white',
@@ -238,9 +236,9 @@ export const UserTable = () => {
               <TableBody>
                 {filteredUsuarios
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map(({ ejecutor, observacionPrevia, estado, key }:{estado: EstadoTarea, observacionPrevia:string, key:string, ejecutor:any}) => {
+                .map(({ ejecutor, observacionPrevia, estado, key, fechaAviso, id }:{estado: EstadoTarea, observacionPrevia:string, key:string, ejecutor:any, fechaAviso:any, id:string}) => {
                   return(
-                    <TableRow hover role="checkbox" tabIndex={-1} key={key} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                    <TableRow hover role="checkbox" onClick={()=>navigate(`/task/${id}`)} tabIndex={-1} key={key} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                       <TableCell
                         component="th"
                         sx={{
@@ -265,7 +263,7 @@ export const UserTable = () => {
                         <TaskStateTable estado={estado} table />
                       </TableCell>
                       <TableCell sx={{ fontSize: '0.8rem', display: {xs: 'none', sm: 'table-cell'} }} padding="none" align="center">
-                        10/5/2023
+                        {getTimeStamp(fechaAviso)}
                       </TableCell>
                     </TableRow>
                   );
