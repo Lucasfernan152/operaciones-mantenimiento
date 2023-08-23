@@ -2,6 +2,7 @@ import { Box, Button, Input, IconButton, useMediaQuery } from '@mui/material';
 import { useNavigate } from 'react-router-dom'; // Importa useHistory para manejar la redirección
 import AddIcon from '@mui/icons-material/Add';
 import SearchIcon from '@mui/icons-material/Search';
+import SplitButton from './SplitButton';
 
 export const TableHeader = () => {
   const navigate = useNavigate(); // Obtiene la instancia de history
@@ -75,6 +76,7 @@ export const TableHeader = () => {
             >
               Buscar Operacion
             </Button>
+            <SplitButton/>
           </>
         )}
       </section>

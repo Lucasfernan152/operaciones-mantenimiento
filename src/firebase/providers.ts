@@ -314,3 +314,27 @@ export const updateTask = async (taskId: string, updatedValues: any) => {
   }
   
 };
+
+export const getAllTask = async ( rawData: boolean ): Promise<Tarea[]> => {
+  const queryParams = query(collection(FirebaseDB, "Tareas"));
+  const querySnapshot = await getDocs(queryParams);
+
+  const listOfTasks: any[] = [];
+  
+  querySnapshot.forEach((doc) => {
+    listOfTasks.push(doc.data());
+  });
+
+  if (!rawData) return listOfTasks;
+
+  const rawDataResponse = await Promise.all(listOfTasks.map(async (task, index) => {
+    task.ejecutor = await getUser(task.ejecutor, 'id');
+    task.creador = await getUser(task.creador, 'id');
+    task.elemento = await getElement(task.elemento, 'id');
+    task.key = `${task.id}_${index}`; // Generar clave única usando ID y el índice
+    return task;
+
+  }));
+
+  return rawDataResponse;
+};
